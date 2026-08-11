@@ -2,9 +2,10 @@
 import { render } from 'astro:content';
 import { href } from '../../lib/href';
 import BaseLayout from '../../layouts/BaseLayout.astro';
-import EntryPage from '../../components/EntryPage.astro';
+import StatusMark from '../../components/StatusMark.astro';
 import { getNotes } from '../../lib/content';
-import { LAYER_LABEL } from '../../lib/taxonomy';
+import { formatDate, site } from '../../site';
+import { NOTE_STATUS_NOTE, type NoteStatus } from '../../lib/taxonomy';
 
 export async function getStaticPaths() {
   const notes = await getNotes();
@@ -12,71 +13,161 @@ export async function getStaticPaths() {
 }
 
 const { note } = Astro.props;
-const { Content, headings } = await render(note);
-const toc = headings.filter((h) => h.depth === 2);
-
-// 같은 층의 다른 노트를 아래에 붙인다. 태그보다 층이 안정적이라 링크가 안 썩는다.
-const all = await getNotes();
-const sameLayer = all.filter((n) => n.id !== note.id && n.data.layer === note.data.layer).slice(0, 4);
+const { Content } = await render(note);
+const status = note.data.status as NoteStatus;
 ---
 
 <BaseLayout title={note.data.title} description={note.data.summary} type="article">
-  <EntryPage
-    kind="note"
-    title={note.data.title}
-    summary={note.data.summary}
-    layer={note.data.layer}
-    status={note.data.status}
-    startedAt={note.data.created}
-    startedLabel="Written"
-    updatedAt={note.data.updated}
-    tags={note.data.tags}
-    toc={toc}
-  >
-    <Content />
+  <article class="frame note">
+    <header class="note-head">
+      <div class="note-kind">
+        <a class="meta back" href={href('/notes/')}>← Notes</a>
+        <StatusMark status={status} />
+      </div>
 
-    <Fragment slot="foot">
-      {
-        sameLayer.length > 0 && (
-          <section class="more">
-            <div class="sec-head">
-              <h2 class="sec-title">More in {LAYER_LABEL[note.data.layer]}</h2>
-              <a class="link-more" href={href('/notes/')}>
-                All notes →
-              </a>
+      <h1 class="note-title">{note.data.title}</h1>
+      <p class="note-summary">{note.data.summary}</p>
+
+      <dl class="note-dates">
+        <div>
+          <dt class="meta">Written</dt>
+          <dd class="meta">
+            <time datetime={note.data.created.toISOString().slice(0, 10)}>
+              {formatDate(note.data.created)}
+            </time>
+          </dd>
+        </div>
+        {
+          note.data.updated && (
+            <div>
+              <dt class="meta">Updated</dt>
+              <dd class="meta accent">
+                <time datetime={note.data.updated.toISOString().slice(0, 10)}>
+                  {formatDate(note.data.updated)}
+                </time>
+              </dd>
             </div>
-            <ul class="more-list">
-              {sameLayer.map((n) => (
-                <li>
-                  <a href={href(`/notes/${n.id}/`)}>{n.data.title}</a>
-                </li>
-              ))}
-            </ul>
-          </section>
-        )
-      }
-    </Fragment>
-  </EntryPage>
+          )
+        }
+        {
+          note.data.tags.length > 0 && (
+            <div class="note-tags">
+              <dt class="meta">Tags</dt>
+              <dd>
+                {note.data.tags.map((t) => (
+                  <span class="row-tag">#{t}</span>
+                ))}
+              </dd>
+            </div>
+          )
+        }
+      </dl>
+    </header>
+
+    {
+      status !== 'verified' && (
+        <p class="caveat" data-status={status}>
+          {NOTE_STATUS_NOTE[status]}
+        </p>
+      )
+    }
+
+    <div class="prose"><Content /></div>
+
+    <footer class="note-foot">
+      <a class="link-more" href={href('/notes/')}>← All notes</a>
+      <p class="byline"><span class="meta">{site.name} · {site.role}</span></p>
+    </footer>
+  </article>
 </BaseLayout>
 
 <style>
-  .sec-head {
-    border-bottom: 1px solid var(--line-soft);
-    padding-bottom: 0.7rem;
+  .note {
+    padding-top: 3rem;
+    max-width: calc(var(--measure) + 4rem);
+    margin-inline: auto;
   }
 
-  .more-list {
-    list-style: none;
-    margin-top: 0.5rem;
+  .note-kind {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.9rem;
+    margin-bottom: 1.1rem;
   }
 
-  .more-list li {
-    padding: 0.7rem 0;
-    border-bottom: 1px solid var(--line-soft);
-    font-size: 0.9375rem;
-  }
-
-  .more-list a:hover {
+  .back:hover {
     color: var(--accent-ink);
+  }
+
+  .note-title {
+    font-size: clamp(1.5rem, 1.1rem + 1.9vw, 2rem);
+    font-weight: 600;
+    letter-spacing: -0.035em;
+    line-height: 1.32;
+  }
+
+  .note-summary {
+    margin-top: 0.9rem;
+    color: var(--ink-2);
+    font-size: 0.9375rem;
+    line-height: 1.75;
+  }
+
+  .note-dates {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1.25rem 2.25rem;
+    margin-top: 1.4rem;
+    padding-bottom: 1.6rem;
+    border-bottom: 1px solid var(--line-soft);
+  }
+
+  .note-dates > div {
+    display: grid;
+    gap: 0.3rem;
+  }
+
+  .note-dates dd.accent {
+    color: var(--accent-ink);
+  }
+
+  .note-tags dd {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.4rem 0.8rem;
+  }
+
+  /* verified 가 아니면 본문 위에 그 사실을 먼저 말한다 */
+  .caveat {
+    margin-top: 1.75rem;
+    padding: 0.8rem 1rem;
+    border-radius: var(--radius-surface);
+    font-size: 0.875rem;
+    border: 1px solid var(--line);
+  }
+  .caveat[data-status='rough'] {
+    color: var(--signal);
+    border-color: color-mix(in oklab, var(--signal) 35%, transparent);
+    background: var(--signal-soft);
+  }
+  .caveat[data-status='overturned'] {
+    color: var(--ink-2);
+  }
+
+  .prose {
+    margin-top: 2.25rem;
+    max-width: none;
+  }
+
+  .note-foot {
+    margin-top: 3.5rem;
+    padding-top: 1.5rem;
+    border-top: 1px solid var(--line-soft);
+  }
+
+  .byline {
+    margin-top: 1.25rem;
   }
 </style>

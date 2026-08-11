@@ -1,10 +1,25 @@
 import { defineCollection } from 'astro:content';
 import { z } from 'astro/zod';
 import { glob } from 'astro/loaders';
-import { LAYERS, NOTE_STATUS, DECISION_STATUS } from './lib/taxonomy';
+import { NOTE_STATUS } from './lib/taxonomy';
+
+/** writing: 긴 글. 한 번 쓰고 발행하므로 축은 발행일이다. */
+const writing = defineCollection({
+  loader: glob({ base: './src/content/writing', pattern: '**/*.md' }),
+  schema: z.object({
+    title: z.string(),
+    summary: z.string(),
+    date: z.coerce.date(),
+    tags: z.array(z.string()).default([]),
+    // 시리즈에 속하면 series 슬러그와 편 번호를 같이 적는다. 둘 다 없으면 단독 글.
+    series: z.string().optional(),
+    part: z.number().int().positive().optional(),
+    draft: z.boolean().default(false),
+  }),
+});
 
 /**
- * notes: 알게 된 것. 계속 고쳐 쓰는 문서라 발행일이 아니라 updated 가 축이다.
+ * notes: 짧은 노트. 계속 고쳐 쓰는 문서라 축이 updated 다.
  * draft: true 는 나만 보는 기록. 프로덕션 빌드에서 빠지고 로컬에서만 보인다.
  */
 const notes = defineCollection({
@@ -14,30 +29,20 @@ const notes = defineCollection({
     summary: z.string(),
     created: z.coerce.date(),
     updated: z.coerce.date().optional(),
-    layer: z.enum(LAYERS),
     status: z.enum(NOTE_STATUS).default('rough'),
     tags: z.array(z.string()).default([]),
     draft: z.boolean().default(false),
   }),
 });
 
-/**
- * decisions: 고민하고 고른 것. 뒤집히면 새 문서를 쓰지 않고 이 문서를 고친다.
- * supersedes 로 어떤 결정을 대체했는지 남긴다.
- */
-const decisions = defineCollection({
-  loader: glob({ base: './src/content/decisions', pattern: '**/*.md' }),
+/** series: 목차 칸은 없고 글에 붙는 라벨로만 쓴다. 제목과 소개만 있으면 된다. */
+const series = defineCollection({
+  loader: glob({ base: './src/content/series', pattern: '**/*.md' }),
   schema: z.object({
     title: z.string(),
     summary: z.string(),
-    decided: z.coerce.date(),
-    updated: z.coerce.date().optional(),
-    layer: z.enum(LAYERS),
-    status: z.enum(DECISION_STATUS).default('active'),
-    /** 이 결정이 대체한 이전 결정의 슬러그 */
-    supersedes: z.string().optional(),
-    tags: z.array(z.string()).default([]),
-    draft: z.boolean().default(false),
+    status: z.enum(['In progress', 'Complete']).default('In progress'),
+    order: z.number().int().default(0),
   }),
 });
 
@@ -55,4 +60,4 @@ const projects = defineCollection({
   }),
 });
 
-export const collections = { notes, decisions, projects };
+export const collections = { writing, notes, series, projects };

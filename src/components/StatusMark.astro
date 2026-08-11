@@ -1,11 +1,11 @@
 ---
-import { NOTE_STATUS_NOTE, DECISION_STATUS_NOTE } from '../lib/taxonomy';
+import { NOTE_STATUS_NOTE } from '../lib/taxonomy';
 
 interface Props {
   status: string;
 }
 const { status } = Astro.props;
-const notes: Record<string, string> = { ...NOTE_STATUS_NOTE, ...DECISION_STATUS_NOTE };
+const notes: Record<string, string> = NOTE_STATUS_NOTE;
 ---
 
 <span class="status" data-status={status} title={notes[status]}>
@@ -34,32 +34,26 @@ const notes: Record<string, string> = { ...NOTE_STATUS_NOTE, ...DECISION_STATUS_
   }
 
   /* 확인된 것만 채운 점. 나머지는 비었거나 그어져 있다 */
-  .status[data-status='verified'],
-  .status[data-status='active'] {
+  .status[data-status='verified'] {
     color: var(--accent-ink);
   }
-  .status[data-status='verified'] .status-dot,
-  .status[data-status='active'] .status-dot {
+  .status[data-status='verified'] .status-dot {
     background: var(--accent);
   }
 
-  .status[data-status='rough'] .status-dot,
-  .status[data-status='revisit'] .status-dot {
+  .status[data-status='rough'] .status-dot {
     background: transparent;
     box-shadow: inset 0 0 0 1px var(--signal);
   }
-  .status[data-status='rough'],
-  .status[data-status='revisit'] {
+  .status[data-status='rough'] {
     color: var(--signal);
   }
 
-  .status[data-status='overturned'],
-  .status[data-status='superseded'] {
+  .status[data-status='overturned'] {
     text-decoration: line-through;
     text-decoration-thickness: 1px;
   }
-  .status[data-status='overturned'] .status-dot,
-  .status[data-status='superseded'] .status-dot {
+  .status[data-status='overturned'] .status-dot {
     background: transparent;
     box-shadow: inset 0 0 0 1px var(--ink-3);
   }

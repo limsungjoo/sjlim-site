@@ -1,89 +1,108 @@
 ---
 import { href } from '../lib/href';
 import BaseLayout from '../layouts/BaseLayout.astro';
-import EntryRow from '../components/EntryRow.astro';
-import { getStream, getNotes, getDecisions } from '../lib/content';
+import WritingRow from '../components/WritingRow.astro';
+import NoteRow from '../components/NoteRow.astro';
+import { getPosts, getNotes, getProjects, makeSeriesLabeler, touchedAt } from '../lib/content';
 
-const [stream, notes, decisions] = await Promise.all([getStream(12), getNotes(), getDecisions()]);
+const [posts, notes, projects, seriesLabel] = await Promise.all([
+  getPosts(),
+  getNotes(),
+  getProjects(),
+  makeSeriesLabeler(),
+]);
+
+const featured = projects.slice(0, 3);
+const recentPosts = posts.slice(0, 3);
+const recentNotes = notes.slice(0, 4);
 ---
 
 <BaseLayout>
-  <div class="frame">
-    <div class="stream-head">
-      <p class="meta">Recently touched</p>
-      <p class="stream-note">
-        새로 쓴 순서가 아니라 <strong>최근에 고친 순서</strong>입니다. 별표(<span class="star">*</span
-        >)는 처음 쓴 뒤 다시 손댄 글입니다.
-      </p>
-      <ul class="stream-counts">
-        <li class="meta">{notes.length} NOTES</li>
-        <li class="meta">{decisions.length} DECISIONS</li>
-      </ul>
+  <section class="frame section section-first">
+    <div class="sec-head">
+      <h2 class="sec-title">Portfolio</h2>
+      <a class="link-more" href={href('/portfolio/')}>All work →</a>
     </div>
-
     <div class="ledger">
       {
-        stream.map(({ kind, entry, touched }) => {
-          const base = kind === 'note' ? '/notes/' : '/decisions/';
-          const start = 'created' in entry.data ? entry.data.created : entry.data.decided;
-          return (
-            <EntryRow
-              href={href(`${base}${entry.id}/`)}
-              kind={kind}
-              title={entry.data.title}
-              summary={entry.data.summary}
-              layer={entry.data.layer}
-              status={entry.data.status}
-              touched={touched}
-              revised={touched.getTime() !== start.getTime()}
-              tags={entry.data.tags}
-              showKind
-            />
-          );
-        })
+        featured.map((p) => (
+          <article class="row">
+            <div class="row-rail">
+              <span class="chip" data-state={p.data.state}>
+                {p.data.state}
+              </span>
+              <span class="meta">{p.data.period}</span>
+            </div>
+            <div>
+              <h3 class="row-title">
+                <a href={href(`/portfolio/#${p.id}`)} class="row-link">
+                  {p.data.title}
+                </a>
+              </h3>
+              <p class="row-summary">{p.data.summary}</p>
+            </div>
+          </article>
+        ))
       }
     </div>
+  </section>
 
-    <p class="tail">
+  <section class="frame section">
+    <div class="sec-head">
+      <h2 class="sec-title">Writing</h2>
+      <a class="link-more" href={href('/writing/')}>All posts →</a>
+    </div>
+    <div class="ledger">
+      {
+        recentPosts.map((post) => (
+          <WritingRow
+            href={href(`/writing/${post.id}/`)}
+            title={post.data.title}
+            summary={post.data.summary}
+            date={post.data.date}
+            tags={post.data.tags}
+            seriesLabel={seriesLabel(post)}
+          />
+        ))
+      }
+    </div>
+  </section>
+
+  <section class="frame section">
+    <div class="sec-head">
+      <h2 class="sec-title">Notes</h2>
       <a class="link-more" href={href('/notes/')}>All notes →</a>
-      <a class="link-more" href={href('/decisions/')}>All decisions →</a>
-    </p>
-  </div>
+    </div>
+    <div class="ledger">
+      {
+        recentNotes.map((note) => (
+          <NoteRow
+            href={href(`/notes/${note.id}/`)}
+            title={note.data.title}
+            summary={note.data.summary}
+            status={note.data.status}
+            touched={touchedAt(note)}
+            revised={Boolean(note.data.updated)}
+            tags={note.data.tags}
+          />
+        ))
+      }
+    </div>
+  </section>
 </BaseLayout>
 
 <style>
-  .stream-head {
-    padding-top: 3.5rem;
-    padding-bottom: 1.5rem;
+  .section {
+    margin-top: 3.5rem;
   }
 
-  .stream-note {
-    margin-top: 0.8rem;
-    max-width: var(--measure);
-    color: var(--ink-2);
-    font-size: 0.9375rem;
-    line-height: 1.7;
-  }
-  .stream-note strong {
-    color: var(--ink);
-    font-weight: 600;
-  }
-  .star {
-    color: var(--accent);
-    font-family: var(--font-mono);
+  .section-first {
+    margin-top: 3.25rem;
   }
 
-  .stream-counts {
-    display: flex;
-    gap: 1rem;
-    list-style: none;
-    margin-top: 1rem;
-  }
-
-  .tail {
-    margin-top: 1.75rem;
-    display: flex;
-    flex-wrap: wrap;
-    gap: 1.5rem;
+  .row-link::after {
+    content: '';
+    position: absolute;
+    inset: 0;
   }
 </style>

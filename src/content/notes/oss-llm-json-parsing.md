@@ -2,7 +2,6 @@
 title: OSS 모델은 JSON 을 코드펜스로 감싸서 준다
 summary: Claude 기준으로 짠 파서가 self-host 모델에서 그대로 깨진다. 아직 어느 모델이 어떤 형태로 어긋나는지 다 정리 못 함.
 created: 2026-08-09
-layer: model
 status: rough
 tags:
   - LLM
