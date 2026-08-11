@@ -1,0 +1,91 @@
+---
+import { href, isActive } from '../lib/href';
+import { site } from '../site';
+import ThemeToggle from './ThemeToggle.astro';
+
+const path = Astro.url.pathname;
+---
+
+<header class="site-header">
+  <div class="frame header-inner">
+    <a href={href('/')} class="brand" aria-label={`${site.handle} home`}>
+      <span class="brand-name">{site.handle}</span><span class="brand-slash">/</span>
+    </a>
+
+    <nav aria-label="Main" class="nav">
+      {
+        site.nav.map((item) => (
+          <a
+            href={href(item.href)}
+            class="nav-link"
+            aria-current={isActive(path, item.href) ? 'page' : undefined}
+          >
+            {item.label}
+          </a>
+        ))
+      }
+    </nav>
+
+    <ThemeToggle />
+  </div>
+</header>
+
+<style>
+  .site-header {
+    position: sticky;
+    top: 0;
+    z-index: 40;
+    background: color-mix(in oklab, var(--paper) 82%, transparent);
+    backdrop-filter: saturate(180%) blur(12px);
+    border-bottom: 1px solid var(--line-soft);
+  }
+
+  .header-inner {
+    display: flex;
+    align-items: center;
+    gap: 1.25rem;
+    height: 3.5rem;
+  }
+
+  .brand {
+    font-family: var(--font-mono);
+    font-size: 0.875rem;
+    font-weight: 600;
+    letter-spacing: -0.02em;
+    margin-right: auto;
+  }
+  .brand-slash {
+    color: var(--accent);
+  }
+
+  .nav {
+    display: flex;
+    gap: 1.1rem;
+  }
+
+  .nav-link {
+    font-family: var(--font-mono);
+    font-size: 0.75rem;
+    letter-spacing: 0.04em;
+    color: var(--ink-2);
+    padding-block: 0.4rem;
+    border-bottom: 1px solid transparent;
+    transition: color 0.15s ease;
+  }
+  .nav-link:hover {
+    color: var(--ink);
+  }
+  .nav-link[aria-current='page'] {
+    color: var(--ink);
+    border-bottom-color: var(--accent);
+  }
+
+  @media (max-width: 26rem) {
+    .nav {
+      gap: 0.75rem;
+    }
+    .nav-link {
+      font-size: 0.6875rem;
+    }
+  }
+</style>

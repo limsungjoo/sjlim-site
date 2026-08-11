@@ -1,0 +1,57 @@
+---
+import { href } from '../lib/href';
+import { site } from '../site';
+const year = new Date().getFullYear();
+---
+
+<footer class="site-footer">
+  <div class="frame footer-inner">
+    <p class="meta">© {year} {site.name}</p>
+    <ul class="footer-links">
+      {
+        site.links.map((l) => (
+          <li>
+            <a href={l.href.startsWith('/') ? href(l.href) : l.href} rel={l.href.startsWith('http') ? 'me noopener' : undefined}>
+              {l.label}
+            </a>
+          </li>
+        ))
+      }
+    </ul>
+  </div>
+</footer>
+
+<style>
+  .site-footer {
+    margin-top: 5rem;
+    border-top: 1px solid var(--line-soft);
+    padding-block: 1.75rem 3rem;
+  }
+
+  .footer-inner {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem 1.5rem;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .footer-links {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1.1rem;
+    list-style: none;
+  }
+
+  .footer-links a {
+    font-family: var(--font-mono);
+    font-size: 0.75rem;
+    color: var(--ink-2);
+    border-bottom: 1px solid transparent;
+    transition: color 0.15s ease;
+  }
+  .footer-links a:hover {
+    color: var(--accent-ink);
+    border-bottom-color: currentColor;
+  }
+</style>

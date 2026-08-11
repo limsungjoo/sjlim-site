@@ -1,0 +1,180 @@
+---
+import { href } from '../../lib/href';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import PageHead from '../../components/PageHead.astro';
+import { getSeriesWithPosts } from '../../lib/content';
+import { formatDate } from '../../site';
+
+const groups = await getSeriesWithPosts();
+const totalPosts = groups.reduce((n, g) => n + g.posts.length, 0);
+---
+
+<BaseLayout title="Series" description="Topics written in order, one part at a time.">
+  <div class="frame">
+    <PageHead
+      eyebrow="Series"
+      title="Series"
+      lead="Topics too long for one post, written in order. Each part takes the previous conclusion as its premise."
+      counts={[`${groups.length} SERIES`, `${totalPosts} POSTS`]}
+    />
+
+    <div class="series-list">
+      {
+        groups.map(({ entry, posts }) => (
+          <section class="series-block">
+            <header class="series-head">
+              <div class="series-rail">
+                <span class="meta">{posts.length} PARTS</span>
+                <span class="meta">{entry.data.status}</span>
+              </div>
+              <div>
+                <h2 class="series-title">
+                  <a href={href(`/series/${entry.id}/`)}>{entry.data.title}</a>
+                </h2>
+                <p class="series-summary">{entry.data.summary}</p>
+              </div>
+            </header>
+
+            <ol class="parts">
+              {posts.map((p, i) => (
+                <li class="part">
+                  <span class="meta part-no">{String(i + 1).padStart(2, '0')}</span>
+                  <a class="part-title" href={href(`/writing/${p.id}/`)}>
+                    {p.data.title}
+                  </a>
+                  <time class="meta part-date" datetime={p.data.date.toISOString().slice(0, 10)}>
+                    {formatDate(p.data.date)}
+                  </time>
+                </li>
+              ))}
+            </ol>
+          </section>
+        ))
+      }
+    </div>
+  </div>
+</BaseLayout>
+
+<style>
+  .series-list {
+    display: grid;
+    gap: 3rem;
+  }
+
+  .series-block {
+    border-top: 1px solid var(--line);
+    padding-top: 1.5rem;
+  }
+
+  .series-head {
+    display: grid;
+    gap: 0.6rem 1.75rem;
+  }
+
+  @media (min-width: 46rem) {
+    .series-head {
+      grid-template-columns: var(--rail) 1fr;
+    }
+  }
+
+  .series-rail {
+    display: flex;
+    gap: 0.75rem;
+  }
+
+  @media (min-width: 46rem) {
+    .series-rail {
+      flex-direction: column;
+      gap: 0.4rem;
+      padding-top: 0.2rem;
+    }
+  }
+
+  .series-title {
+    font-size: 1.3125rem;
+    font-weight: 600;
+    letter-spacing: -0.03em;
+    line-height: 1.35;
+  }
+  .series-title a:hover {
+    color: var(--accent-ink);
+  }
+
+  .series-summary {
+    margin-top: 0.55rem;
+    max-width: var(--measure);
+    color: var(--ink-2);
+    font-size: 0.9375rem;
+    line-height: 1.7;
+  }
+
+  .parts {
+    list-style: none;
+    margin-top: 1.5rem;
+    position: relative;
+  }
+
+  @media (min-width: 46rem) {
+    .parts {
+      margin-left: calc(var(--rail) + 1.75rem);
+    }
+  }
+
+  /* 편끼리 잇는 세로선 = 순서가 정보라는 표시 */
+  .parts::before {
+    content: '';
+    position: absolute;
+    left: 3px;
+    top: 1.2rem;
+    bottom: 1.2rem;
+    width: 1px;
+    background: var(--line);
+  }
+
+  .part {
+    display: grid;
+    grid-template-columns: 2.2rem 1fr;
+    align-items: baseline;
+    gap: 0.25rem 0.6rem;
+    padding: 0.7rem 0 0.7rem 1.15rem;
+    border-bottom: 1px solid var(--line-soft);
+    position: relative;
+  }
+
+  .part::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 1.05rem;
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    background: var(--line);
+    transition: background 0.15s ease;
+  }
+  .part:hover::before {
+    background: var(--accent);
+  }
+
+  .part-title {
+    font-size: 0.9688rem;
+    font-weight: 500;
+    letter-spacing: -0.015em;
+  }
+  .part-title:hover {
+    color: var(--accent-ink);
+  }
+
+  .part-date {
+    grid-column: 2;
+  }
+
+  @media (min-width: 46rem) {
+    .part {
+      grid-template-columns: 2.2rem 1fr auto;
+    }
+    .part-date {
+      grid-column: 3;
+    }
+  }
+</style>

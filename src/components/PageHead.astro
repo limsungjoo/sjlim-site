@@ -1,0 +1,64 @@
+---
+interface Props {
+  eyebrow: string;
+  title: string;
+  lead?: string;
+  /** 우측 모노 카운터. 예: ['5 POSTS', '2 SERIES'] */
+  counts?: string[];
+}
+const { eyebrow, title, lead, counts = [] } = Astro.props;
+---
+
+<div class="page-head">
+  <p class="meta">{eyebrow}</p>
+  <div class="page-head-row">
+    <h1 class="page-title">{title}</h1>
+    {
+      counts.length > 0 && (
+        <ul class="page-counts">
+          {counts.map((c) => (
+            <li class="meta">{c}</li>
+          ))}
+        </ul>
+      )
+    }
+  </div>
+  {lead && <p class="page-lead">{lead}</p>}
+</div>
+
+<style>
+  .page-head {
+    padding-top: 3.5rem;
+    padding-bottom: 2.25rem;
+  }
+
+  .page-head-row {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 1rem;
+    flex-wrap: wrap;
+    margin-top: 0.5rem;
+  }
+
+  .page-title {
+    font-size: clamp(1.75rem, 1.2rem + 2.2vw, 2.5rem);
+    font-weight: 600;
+    letter-spacing: -0.035em;
+    line-height: 1.2;
+  }
+
+  .page-counts {
+    display: flex;
+    gap: 1rem;
+    list-style: none;
+  }
+
+  .page-lead {
+    margin-top: 0.9rem;
+    max-width: var(--measure);
+    color: var(--ink-2);
+    font-size: 0.9375rem;
+    line-height: 1.75;
+  }
+</style>

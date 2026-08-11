@@ -1,0 +1,322 @@
+---
+import { href } from '../../lib/href';
+import { render } from 'astro:content';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import { getPosts, getSeriesWithPosts } from '../../lib/content';
+import { formatDate, readingMinutes, site } from '../../site';
+
+export async function getStaticPaths() {
+  const posts = await getPosts();
+  return posts.map((post) => ({ params: { slug: post.id }, props: { post } }));
+}
+
+const { post } = Astro.props;
+const { Content, headings } = await render(post);
+
+const toc = headings.filter((h) => h.depth === 2);
+const minutes = readingMinutes(post.body ?? '');
+
+// 시리즈에 속하면 시리즈 순서로, 아니면 발행 순서로 이웃을 잡는다.
+const [allPosts, seriesGroups] = await Promise.all([getPosts(), getSeriesWithPosts()]);
+const group = seriesGroups.find((g) => g.entry.id === post.data.series);
+const sequence = group ? group.posts : [...allPosts].reverse();
+const index = sequence.findIndex((p) => p.id === post.id);
+const prev = index > 0 ? sequence[index - 1] : undefined;
+const next = index >= 0 && index < sequence.length - 1 ? sequence[index + 1] : undefined;
+---
+
+<BaseLayout title={post.data.title} description={post.data.summary} type="article">
+  <article class="frame article">
+    <header class="article-head">
+      {
+        post.data.tags.length > 0 && (
+          <ul class="head-tags">
+            {post.data.tags.map((t) => (
+              <li class="row-tag">#{t}</li>
+            ))}
+          </ul>
+        )
+      }
+      <h1 class="article-title">{post.data.title}</h1>
+      <p class="article-summary">{post.data.summary}</p>
+      <div class="article-meta">
+        <time class="meta" datetime={post.data.date.toISOString().slice(0, 10)}>
+          {formatDate(post.data.date)}
+        </time>
+        <span class="meta">{minutes} MIN</span>
+        {group && <span class="meta">{group.entry.data.title}</span>}
+      </div>
+    </header>
+
+    {
+      group && (
+        <nav class="series-spine" aria-label="Series contents">
+          <p class="meta spine-head">
+            <a href={href(`/series/${group.entry.id}/`)}>{group.entry.data.title}</a>
+          </p>
+          <ol>
+            {group.posts.map((p, i) => (
+              <li class:list={['spine-item', { current: p.id === post.id }]}>
+                <span class="meta spine-no">{String(i + 1).padStart(2, '0')}</span>
+                {p.id === post.id ? (
+                  <span aria-current="true">{p.data.title}</span>
+                ) : (
+                  <a href={href(`/writing/${p.id}/`)}>{p.data.title}</a>
+                )}
+              </li>
+            ))}
+          </ol>
+        </nav>
+      )
+    }
+
+    <div class="article-body">
+      {
+        toc.length > 1 && (
+          <aside class="toc" aria-label="Contents">
+            <p class="meta">Contents</p>
+            <ol>
+              {toc.map((h) => (
+                <li>
+                  <a href={`#${h.slug}`}>{h.text}</a>
+                </li>
+              ))}
+            </ol>
+          </aside>
+        )
+      }
+
+      <div class="prose">
+        <Content />
+      </div>
+    </div>
+
+    <footer class="article-foot">
+      <nav class="pager" aria-label="Adjacent posts">
+        {
+          prev ? (
+            <a class="pager-item" href={href(`/writing/${prev.id}/`)}>
+              <span class="meta">← Previous</span>
+              <span class="pager-title">{prev.data.title}</span>
+            </a>
+          ) : (
+            <span />
+          )
+        }
+        {
+          next && (
+            <a class="pager-item pager-next" href={href(`/writing/${next.id}/`)}>
+              <span class="meta">Next →</span>
+              <span class="pager-title">{next.data.title}</span>
+            </a>
+          )
+        }
+      </nav>
+
+      <p class="byline">
+        <span class="meta">{site.name} · {site.role}</span>
+      </p>
+    </footer>
+  </article>
+</BaseLayout>
+
+<style>
+  .article {
+    padding-top: 3rem;
+  }
+
+  .head-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.4rem 0.9rem;
+    list-style: none;
+    margin-bottom: 1rem;
+  }
+
+  .article-title {
+    font-size: clamp(1.7rem, 1.1rem + 2.6vw, 2.45rem);
+    font-weight: 600;
+    letter-spacing: -0.04em;
+    line-height: 1.28;
+    max-width: 34ch;
+  }
+
+  .article-summary {
+    margin-top: 1rem;
+    max-width: var(--measure);
+    color: var(--ink-2);
+    font-size: 0.9375rem;
+    line-height: 1.75;
+  }
+
+  .article-meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem;
+    margin-top: 1.25rem;
+    padding-bottom: 1.75rem;
+    border-bottom: 1px solid var(--line-soft);
+  }
+
+  /* 시리즈 스파인: 레일 번호가 세로선으로 이어져 순서를 보여준다 */
+  .series-spine {
+    margin-top: 2rem;
+    padding: 1.1rem 1.25rem;
+    border: 1px solid var(--line);
+    border-radius: var(--radius-surface);
+    background: color-mix(in oklab, var(--accent) 3.5%, transparent);
+  }
+
+  .spine-head a {
+    color: var(--accent-ink);
+  }
+  .spine-head a:hover {
+    text-decoration: underline;
+  }
+
+  .series-spine ol {
+    margin-top: 0.7rem;
+    list-style: none;
+    position: relative;
+  }
+
+  /* 편끼리 잇는 세로선. 첫 편과 마지막 편의 점에서 끊긴다 */
+  .series-spine ol::before {
+    content: '';
+    position: absolute;
+    left: 3px;
+    top: 0.85rem;
+    bottom: 0.85rem;
+    width: 1px;
+    background: var(--line);
+  }
+
+  .spine-item {
+    display: grid;
+    grid-template-columns: 1.9rem 1fr;
+    align-items: baseline;
+    gap: 0.5rem;
+    padding: 0.32rem 0 0.32rem 1.15rem;
+    font-size: 0.9rem;
+    color: var(--ink-2);
+    position: relative;
+  }
+
+  .spine-item::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 0.72em;
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    background: var(--line);
+  }
+
+  .spine-item.current {
+    color: var(--ink);
+    font-weight: 600;
+  }
+  .spine-item.current::before {
+    background: var(--accent);
+  }
+  .spine-item.current .spine-no {
+    color: var(--accent);
+  }
+  .spine-item a:hover {
+    color: var(--accent-ink);
+  }
+
+  /* 본문 + 목차 */
+  .article-body {
+    margin-top: 2.75rem;
+    display: grid;
+    gap: 2rem;
+  }
+
+  @media (min-width: 64rem) {
+    .article-body {
+      grid-template-columns: 1fr 12rem;
+      gap: 3.5rem;
+      align-items: start;
+    }
+    .toc {
+      order: 2;
+      position: sticky;
+      top: 5rem;
+    }
+  }
+
+  .toc ol {
+    margin-top: 0.7rem;
+    list-style: none;
+    display: grid;
+    gap: 0.45rem;
+    border-left: 1px solid var(--line);
+    padding-left: 0.9rem;
+  }
+
+  .toc a {
+    font-size: 0.8125rem;
+    line-height: 1.5;
+    color: var(--ink-2);
+  }
+  .toc a:hover {
+    color: var(--accent-ink);
+  }
+
+  @media (max-width: 63.999rem) {
+    .toc {
+      padding: 1rem 1.15rem;
+      border: 1px solid var(--line-soft);
+      border-radius: var(--radius-surface);
+    }
+  }
+
+  /* 푸터 */
+  .article-foot {
+    margin-top: 4rem;
+    padding-top: 1.75rem;
+    border-top: 1px solid var(--line-soft);
+  }
+
+  .pager {
+    display: grid;
+    gap: 1rem;
+  }
+
+  @media (min-width: 40rem) {
+    .pager {
+      grid-template-columns: 1fr 1fr;
+    }
+  }
+
+  .pager-item {
+    display: grid;
+    gap: 0.4rem;
+    padding: 1rem 1.1rem;
+    border: 1px solid var(--line);
+    border-radius: var(--radius-surface);
+    transition:
+      border-color 0.15s ease,
+      background 0.15s ease;
+  }
+  .pager-item:hover {
+    border-color: var(--accent);
+    background: color-mix(in oklab, var(--accent) 4%, transparent);
+  }
+  .pager-next {
+    text-align: right;
+  }
+
+  .pager-title {
+    font-size: 0.9375rem;
+    font-weight: 500;
+    letter-spacing: -0.015em;
+    line-height: 1.5;
+  }
+
+  .byline {
+    margin-top: 1.75rem;
+  }
+</style>

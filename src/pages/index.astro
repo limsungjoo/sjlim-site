@@ -1,0 +1,111 @@
+---
+import { href } from '../lib/href';
+import BaseLayout from '../layouts/BaseLayout.astro';
+import WritingRow from '../components/WritingRow.astro';
+import { getPosts, getProjects, getSeriesWithPosts, makeSeriesLabeler } from '../lib/content';
+
+const [posts, projects, series, seriesLabel] = await Promise.all([
+  getPosts(),
+  getProjects(),
+  getSeriesWithPosts(),
+  makeSeriesLabeler(),
+]);
+
+const recentPosts = posts.slice(0, 3);
+const featured = projects.slice(0, 3);
+---
+
+<BaseLayout>
+  <section class="frame section section-first">
+    <div class="sec-head">
+      <h2 class="sec-title">Portfolio</h2>
+      <a class="link-more" href={href('/portfolio/')}>All work →</a>
+    </div>
+    <div class="ledger">
+      {
+        featured.map((p) => (
+          <article class="row">
+            <div class="row-rail">
+              <span class="chip" data-state={p.data.state}>
+                {p.data.state}
+              </span>
+              <span class="meta">{p.data.period}</span>
+            </div>
+            <div>
+              <h3 class="row-title">
+                <a href={href(`/portfolio/#${p.id}`)} class="row-link">
+                  {p.data.title}
+                </a>
+              </h3>
+              <p class="row-summary">{p.data.summary}</p>
+            </div>
+          </article>
+        ))
+      }
+    </div>
+  </section>
+
+  <section class="frame section">
+    <div class="sec-head">
+      <h2 class="sec-title">Writing</h2>
+      <a class="link-more" href={href('/writing/')}>All posts →</a>
+    </div>
+    <div class="ledger">
+      {
+        recentPosts.map((post) => (
+          <WritingRow
+            href={href(`/writing/${post.id}/`)}
+            title={post.data.title}
+            summary={post.data.summary}
+            date={post.data.date}
+            tags={post.data.tags}
+            seriesLabel={seriesLabel(post)}
+          />
+        ))
+      }
+    </div>
+  </section>
+
+  <section class="frame section">
+    <div class="sec-head">
+      <h2 class="sec-title">Series</h2>
+      <a class="link-more" href={href('/series/')}>All series →</a>
+    </div>
+    <div class="ledger">
+      {
+        series.map(({ entry, posts: items }) => (
+          <article class="row">
+            <div class="row-rail">
+              <span class="meta">{items.length} PARTS</span>
+              <span class="meta">{entry.data.status}</span>
+            </div>
+            <div>
+              <h3 class="row-title">
+                <a href={href(`/series/${entry.id}/`)} class="row-link">
+                  {entry.data.title}
+                </a>
+              </h3>
+              <p class="row-summary">{entry.data.summary}</p>
+            </div>
+          </article>
+        ))
+      }
+    </div>
+  </section>
+</BaseLayout>
+
+<style>
+  .section {
+    margin-top: 3.5rem;
+  }
+
+  .section-first {
+    margin-top: 3.25rem;
+  }
+
+  .row-link::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+  }
+</style>

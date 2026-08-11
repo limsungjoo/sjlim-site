@@ -1,0 +1,461 @@
+@import 'tailwindcss';
+
+/* ─────────────────────────────────────────────────────────────
+   Design tokens
+   팔레트: cool paper + deep teal 1색. amber 는 상태 칩에만.
+   타이포: IBM Plex Sans KR (한글) / IBM Plex Sans (라틴) / IBM Plex Mono (메타·식별자)
+   ───────────────────────────────────────────────────────────── */
+@theme {
+  --font-sans: 'IBM Plex Sans', 'IBM Plex Sans KR', -apple-system, sans-serif;
+  --font-mono: 'IBM Plex Mono', ui-monospace, SFMono-Regular, monospace;
+
+  --radius-chip: 3px;
+  --radius-surface: 6px;
+
+  --frame: 68rem;
+  --measure: 40rem;
+  --rail: 8.5rem;
+}
+
+:root {
+  color-scheme: light dark;
+
+  --paper: oklch(98.4% 0.004 235);
+  --paper-2: oklch(100% 0 0);
+  --ink: oklch(21% 0.02 250);
+  --ink-2: oklch(50% 0.019 245);
+  --ink-3: oklch(64% 0.016 245);
+  --line: oklch(88% 0.012 245);
+  --line-soft: oklch(93% 0.008 245);
+  --accent: oklch(50% 0.13 205);
+  --accent-ink: oklch(38% 0.11 205);
+  --accent-soft: oklch(95% 0.028 205);
+  --signal: oklch(55% 0.13 62);
+  --signal-soft: oklch(95% 0.04 75);
+}
+
+:root[data-theme='dark'] {
+  --paper: oklch(17.5% 0.014 250);
+  --paper-2: oklch(21.5% 0.016 250);
+  --ink: oklch(93% 0.008 245);
+  --ink-2: oklch(67% 0.018 245);
+  --ink-3: oklch(56% 0.018 245);
+  --line: oklch(100% 0 0 / 0.12);
+  --line-soft: oklch(100% 0 0 / 0.07);
+  --accent: oklch(76% 0.115 200);
+  --accent-ink: oklch(82% 0.1 200);
+  --accent-soft: oklch(28% 0.045 205);
+  --signal: oklch(78% 0.11 68);
+  --signal-soft: oklch(29% 0.05 68);
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme='light']) {
+    --paper: oklch(17.5% 0.014 250);
+    --paper-2: oklch(21.5% 0.016 250);
+    --ink: oklch(93% 0.008 245);
+    --ink-2: oklch(67% 0.018 245);
+    --ink-3: oklch(56% 0.018 245);
+    --line: oklch(100% 0 0 / 0.12);
+    --line-soft: oklch(100% 0 0 / 0.07);
+    --accent: oklch(76% 0.115 200);
+    --accent-ink: oklch(82% 0.1 200);
+    --accent-soft: oklch(28% 0.045 205);
+    --signal: oklch(78% 0.11 68);
+    --signal-soft: oklch(29% 0.05 68);
+  }
+}
+
+/* ── base ────────────────────────────────────────────────── */
+html {
+  background: var(--paper);
+  -webkit-text-size-adjust: 100%;
+  scroll-behavior: smooth;
+  scroll-padding-top: 5.5rem;
+}
+
+body {
+  background: var(--paper);
+  color: var(--ink);
+  font-family: var(--font-sans);
+  font-size: 1rem;
+  line-height: 1.7;
+  word-break: keep-all;
+  overflow-wrap: anywhere;
+  -webkit-font-smoothing: antialiased;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 3px;
+  border-radius: 2px;
+}
+
+::selection {
+  background: var(--accent-soft);
+  color: var(--accent-ink);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* ── layout primitives ───────────────────────────────────── */
+.frame {
+  width: 100%;
+  max-width: var(--frame);
+  margin-inline: auto;
+  padding-inline: 1.5rem;
+}
+
+@media (min-width: 48rem) {
+  .frame {
+    padding-inline: 2.5rem;
+  }
+}
+
+.skip {
+  position: absolute;
+  left: -9999px;
+  top: 0;
+  z-index: 60;
+  background: var(--paper-2);
+  border: 1px solid var(--line);
+  padding: 0.5rem 0.9rem;
+  border-radius: var(--radius-surface);
+}
+.skip:focus {
+  left: 1rem;
+  top: 1rem;
+}
+
+/* ── mono utility text ───────────────────────────────────── */
+.meta {
+  font-family: var(--font-mono);
+  font-size: 0.6875rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--ink-3);
+  font-variant-numeric: tabular-nums;
+}
+
+/* 시그니처: 한글 본문 안의 라틴 기술어를 모노로 세운다 */
+.term {
+  font-family: var(--font-mono);
+  font-size: 0.9em;
+  letter-spacing: -0.01em;
+  font-weight: 500;
+}
+
+.chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35em;
+  font-family: var(--font-mono);
+  font-size: 0.625rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  padding: 0.15rem 0.4rem;
+  border-radius: var(--radius-chip);
+  border: 1px solid var(--line);
+  color: var(--ink-2);
+  white-space: nowrap;
+}
+.chip[data-state='RUNNING'] {
+  color: var(--signal);
+  border-color: color-mix(in oklab, var(--signal) 40%, transparent);
+  background: var(--signal-soft);
+}
+.chip[data-state='SHIPPED'] {
+  color: var(--accent-ink);
+  border-color: color-mix(in oklab, var(--accent) 35%, transparent);
+  background: var(--accent-soft);
+}
+
+/* ── ledger: 사이트 전체의 목록 단위 ──────────────────────── */
+.ledger {
+  border-top: 1px solid var(--line-soft);
+}
+
+.row {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 0.5rem 1.75rem;
+  padding: 1.4rem 0 1.4rem 0.9rem;
+  border-bottom: 1px solid var(--line-soft);
+  position: relative;
+  transition: background 0.16s ease;
+}
+
+/* 좌측 accent bar: hover 시 위에서 아래로 채워진다 */
+.row::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 1.4rem;
+  bottom: 1.4rem;
+  width: 2px;
+  background: var(--accent);
+  transform: scaleY(0);
+  transform-origin: top;
+  transition: transform 0.18s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.row:hover::before,
+.row:focus-within::before {
+  transform: scaleY(1);
+}
+
+.row:hover {
+  background: color-mix(in oklab, var(--accent) 4%, transparent);
+}
+
+@media (min-width: 46rem) {
+  .row {
+    grid-template-columns: var(--rail) 1fr;
+    padding-left: 1.1rem;
+  }
+}
+
+.row-rail {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 0.5rem;
+  padding-top: 0.15rem;
+}
+
+@media (min-width: 46rem) {
+  .row-rail {
+    flex-direction: column;
+    gap: 0.45rem;
+  }
+}
+
+.row-title {
+  font-size: 1.125rem;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+  line-height: 1.45;
+}
+
+.row:hover .row-title {
+  color: var(--accent-ink);
+}
+
+.row-summary {
+  margin-top: 0.4rem;
+  color: var(--ink-2);
+  font-size: 0.9375rem;
+  line-height: 1.65;
+}
+
+.row-tags {
+  margin-top: 0.7rem;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem 0.9rem;
+}
+
+.row-tag {
+  font-family: var(--font-mono);
+  font-size: 0.6875rem;
+  color: var(--ink-3);
+  letter-spacing: 0.01em;
+}
+
+/* ── section head ────────────────────────────────────────── */
+.sec-head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 1rem;
+  flex-wrap: wrap;
+  padding-bottom: 0.9rem;
+}
+
+.sec-title {
+  font-size: 0.8125rem;
+  font-family: var(--font-mono);
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--ink);
+  font-weight: 500;
+}
+
+.link-more {
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  color: var(--accent-ink);
+  border-bottom: 1px solid transparent;
+  transition: border-color 0.15s ease;
+}
+.link-more:hover {
+  border-color: currentColor;
+}
+
+/* ── prose ───────────────────────────────────────────────── */
+.prose {
+  max-width: var(--measure);
+  font-size: 1.0125rem;
+  line-height: 1.85;
+  color: var(--ink);
+}
+
+.prose > * + * {
+  margin-top: 1.15em;
+}
+
+.prose h2 {
+  font-size: 1.3125rem;
+  font-weight: 600;
+  letter-spacing: -0.025em;
+  line-height: 1.45;
+  margin-top: 3rem;
+  padding-top: 1.4rem;
+  border-top: 1px solid var(--line-soft);
+}
+
+.prose h3 {
+  font-size: 1.0625rem;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+  margin-top: 2rem;
+}
+
+.prose p {
+  color: var(--ink);
+}
+
+.prose a {
+  color: var(--accent-ink);
+  border-bottom: 1px solid color-mix(in oklab, var(--accent) 45%, transparent);
+}
+.prose a:hover {
+  border-bottom-color: currentColor;
+}
+
+.prose strong {
+  font-weight: 600;
+}
+
+.prose code {
+  font-family: var(--font-mono);
+  font-size: 0.875em;
+  background: color-mix(in oklab, var(--ink) 6%, transparent);
+  border-radius: var(--radius-chip);
+  padding: 0.1em 0.35em;
+}
+
+.prose pre {
+  background: var(--paper-2);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-surface);
+  padding: 1rem 1.1rem;
+  overflow-x: auto;
+  font-size: 0.8125rem;
+  line-height: 1.7;
+}
+.prose pre code {
+  background: none;
+  padding: 0;
+  font-size: inherit;
+}
+
+:root[data-theme='dark'] .prose pre span,
+:root[data-theme='dark'] .prose pre {
+  color: var(--shiki-dark) !important;
+  background-color: var(--paper-2) !important;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme='light']) .prose pre span,
+  :root:not([data-theme='light']) .prose pre {
+    color: var(--shiki-dark) !important;
+    background-color: var(--paper-2) !important;
+  }
+}
+
+.prose blockquote {
+  border-left: 2px solid var(--accent);
+  padding: 0.2rem 0 0.2rem 1.1rem;
+  color: var(--ink-2);
+}
+
+.prose ul,
+.prose ol {
+  padding-left: 1.2rem;
+}
+.prose ul {
+  list-style: none;
+}
+.prose ul > li {
+  position: relative;
+  padding-left: 0.15rem;
+}
+.prose ul > li::before {
+  content: '';
+  position: absolute;
+  left: -0.95rem;
+  top: 0.85em;
+  width: 4px;
+  height: 1px;
+  background: var(--ink-3);
+}
+.prose ol {
+  list-style: decimal;
+}
+.prose ol::marker,
+.prose li::marker {
+  color: var(--ink-3);
+  font-family: var(--font-mono);
+  font-size: 0.85em;
+}
+.prose li + li {
+  margin-top: 0.4em;
+}
+
+.prose .table-wrap {
+  overflow-x: auto;
+  overscroll-behavior-x: contain;
+}
+
+.prose table {
+  width: 100%;
+  min-width: 22rem;
+  border-collapse: collapse;
+  font-size: 0.9rem;
+}
+.prose th,
+.prose td {
+  border-bottom: 1px solid var(--line-soft);
+  padding: 0.6rem 0.9rem 0.6rem 0;
+  text-align: left;
+  vertical-align: top;
+}
+.prose th {
+  font-family: var(--font-mono);
+  font-size: 0.6875rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--ink-3);
+  font-weight: 500;
+  border-bottom-color: var(--line);
+}
+
+.prose hr {
+  border: 0;
+  border-top: 1px solid var(--line-soft);
+  margin: 2.5rem 0;
+}

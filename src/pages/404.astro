@@ -1,0 +1,31 @@
+---
+import { href } from '../lib/href';
+import BaseLayout from '../layouts/BaseLayout.astro';
+---
+
+<BaseLayout title="404">
+  <div class="frame notfound">
+    <p class="meta">404</p>
+    <h1>Page not found</h1>
+    <p class="lead">The address changed, or the post came down.</p>
+    <p><a class="link-more" href={href('/')}>Back home →</a></p>
+  </div>
+</BaseLayout>
+
+<style>
+  .notfound {
+    padding-block: 6rem 4rem;
+    display: grid;
+    gap: 0.9rem;
+    justify-items: start;
+  }
+  h1 {
+    font-size: 1.75rem;
+    font-weight: 600;
+    letter-spacing: -0.035em;
+  }
+  .lead {
+    color: var(--ink-2);
+    font-size: 0.9375rem;
+  }
+</style>
