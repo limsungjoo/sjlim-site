@@ -16,9 +16,9 @@ export const site = {
     { label: 'RSS', href: '/rss.xml' },
   ],
   nav: [
+    { label: 'Notes', href: '/notes/' },
+    { label: 'Decisions', href: '/decisions/' },
     { label: 'Portfolio', href: '/portfolio/' },
-    { label: 'Writing', href: '/writing/' },
-    { label: 'Series', href: '/series/' },
   ],
 } as const;
 

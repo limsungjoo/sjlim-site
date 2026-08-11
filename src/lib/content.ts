@@ -1,14 +1,29 @@
 import { getCollection, type CollectionEntry } from 'astro:content';
+import { LAYERS, type Layer } from './taxonomy';
 
-export type Post = CollectionEntry<'writing'>;
-export type Series = CollectionEntry<'series'>;
+export type Note = CollectionEntry<'notes'>;
+export type Decision = CollectionEntry<'decisions'>;
 
-/** 최신순. draft 는 프로덕션 빌드에서만 제외한다. */
-export async function getPosts(): Promise<Post[]> {
-  const posts = await getCollection('writing', ({ data }) =>
-    import.meta.env.PROD ? !data.draft : true,
-  );
-  return posts.sort((a, b) => b.data.date.getTime() - a.data.date.getTime());
+/** draft 는 프로덕션 빌드에서만 제외. 로컬 dev 에서는 보인다. */
+const visible = ({ data }: { data: { draft: boolean } }) =>
+  import.meta.env.PROD ? !data.draft : true;
+
+/** 노트의 축은 발행일이 아니라 마지막으로 손댄 날이다. */
+export function touchedAt(entry: Note | Decision): Date {
+  if ('created' in entry.data) {
+    return entry.data.updated ?? entry.data.created;
+  }
+  return entry.data.updated ?? entry.data.decided;
+}
+
+export async function getNotes(): Promise<Note[]> {
+  const notes = await getCollection('notes', visible);
+  return notes.sort((a, b) => touchedAt(b).getTime() - touchedAt(a).getTime());
+}
+
+export async function getDecisions(): Promise<Decision[]> {
+  const decisions = await getCollection('decisions', visible);
+  return decisions.sort((a, b) => touchedAt(b).getTime() - touchedAt(a).getTime());
 }
 
 export async function getProjects() {
@@ -16,28 +31,33 @@ export async function getProjects() {
   return projects.sort((a, b) => a.data.order - b.data.order);
 }
 
-/** 시리즈 하나와 거기 속한 글을 편 번호 순으로 묶는다. */
-export async function getSeriesWithPosts() {
-  const [series, posts] = await Promise.all([getCollection('series'), getPosts()]);
-  return series
-    .sort((a, b) => a.data.order - b.data.order)
-    .map((entry) => ({
-      entry,
-      posts: posts
-        .filter((p) => p.data.series === entry.id)
-        .sort((a, b) => (a.data.part ?? 0) - (b.data.part ?? 0)),
-    }));
+export type StreamItem = {
+  kind: 'note' | 'decision';
+  entry: Note | Decision;
+  touched: Date;
+};
+
+/** 홈에 뿌리는 통합 스트림. 새로 쓴 순서가 아니라 최근 손댄 순서다. */
+export async function getStream(limit?: number): Promise<StreamItem[]> {
+  const [notes, decisions] = await Promise.all([getNotes(), getDecisions()]);
+  const items: StreamItem[] = [
+    ...notes.map((entry) => ({ kind: 'note' as const, entry, touched: touchedAt(entry) })),
+    ...decisions.map((entry) => ({ kind: 'decision' as const, entry, touched: touchedAt(entry) })),
+  ].sort((a, b) => b.touched.getTime() - a.touched.getTime());
+  return limit ? items.slice(0, limit) : items;
 }
 
-/** 글 목록 레일에 붙일 '시리즈명 · 02' 라벨. 단독 글이면 undefined. */
-export async function makeSeriesLabeler() {
-  const series = await getCollection('series');
-  const titles = new Map(series.map((s) => [s.id, s.data.title]));
-  return (post: Post): string | undefined => {
-    if (!post.data.series) return undefined;
-    const title = titles.get(post.data.series);
-    if (!title) return undefined;
-    const part = post.data.part;
-    return part ? `${title} · ${String(part).padStart(2, '0')}` : title;
-  };
+/** 층별로 묶는다. 비어 있는 층도 자리를 남겨 무엇이 아직 없는지 보이게 한다. */
+export function groupByLayer<T extends { data: { layer: Layer } }>(
+  entries: T[],
+): { layer: Layer; entries: T[] }[] {
+  return LAYERS.map((layer) => ({
+    layer,
+    entries: entries.filter((e) => e.data.layer === layer),
+  }));
+}
+
+/** supersedes 로 이 결정을 대체한 쪽을 찾는다. */
+export function findSupersededBy(all: Decision[], slug: string): Decision | undefined {
+  return all.find((d) => d.data.supersedes === slug);
 }

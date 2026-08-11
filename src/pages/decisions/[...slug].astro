@@ -1,0 +1,70 @@
+---
+import { render } from 'astro:content';
+import { href } from '../../lib/href';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import EntryPage from '../../components/EntryPage.astro';
+import { getDecisions, findSupersededBy } from '../../lib/content';
+
+export async function getStaticPaths() {
+  const decisions = await getDecisions();
+  return decisions.map((d) => ({ params: { slug: d.id }, props: { decision: d } }));
+}
+
+const { decision } = Astro.props;
+const { Content, headings } = await render(decision);
+const toc = headings.filter((h) => h.depth === 2);
+
+// 앞뒤 관계를 명시한다. 뒤집힌 결정을 지우지 않고 어디로 갔는지 남기는 게 핵심이다.
+const all = await getDecisions();
+const relations: { label: string; title: string; href: string }[] = [];
+
+if (decision.data.supersedes) {
+  const prev = all.find((d) => d.id === decision.data.supersedes);
+  if (prev) {
+    relations.push({
+      label: 'Supersedes',
+      title: prev.data.title,
+      href: href(`/decisions/${prev.id}/`),
+    });
+  }
+}
+
+const next = findSupersededBy(all, decision.id);
+if (next) {
+  relations.push({
+    label: 'Superseded by',
+    title: next.data.title,
+    href: href(`/decisions/${next.id}/`),
+  });
+}
+---
+
+<BaseLayout title={decision.data.title} description={decision.data.summary} type="article">
+  <EntryPage
+    kind="decision"
+    title={decision.data.title}
+    summary={decision.data.summary}
+    layer={decision.data.layer}
+    status={decision.data.status}
+    startedAt={decision.data.decided}
+    startedLabel="Decided"
+    updatedAt={decision.data.updated}
+    tags={decision.data.tags}
+    toc={toc}
+    relations={relations}
+  >
+    <Content />
+
+    <Fragment slot="foot">
+      <p class="back">
+        <a class="link-more" href={href('/decisions/')}>← All decisions</a>
+      </p>
+    </Fragment>
+  </EntryPage>
+</BaseLayout>
+
+<style>
+  .back {
+    margin-top: 0.5rem;
+  }
+</style>

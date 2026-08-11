@@ -1,0 +1,254 @@
+---
+import StatusMark from './StatusMark.astro';
+import { formatDate, site } from '../site';
+import { LAYER_LABEL, type Layer } from '../lib/taxonomy';
+
+interface Props {
+  kind: 'note' | 'decision';
+  title: string;
+  summary: string;
+  layer: Layer;
+  status: string;
+  /** 처음 쓴 날 (note=created, decision=decided) */
+  startedAt: Date;
+  startedLabel: string;
+  updatedAt?: Date;
+  tags?: string[];
+  toc?: { slug: string; text: string }[];
+  /** 이 문서가 대체한 이전 문서, 또는 이 문서를 대체한 문서 */
+  relations?: { label: string; title: string; href: string }[];
+}
+
+const {
+  kind,
+  title,
+  summary,
+  layer,
+  status,
+  startedAt,
+  startedLabel,
+  updatedAt,
+  tags = [],
+  toc = [],
+  relations = [],
+} = Astro.props;
+---
+
+<article class="frame entry">
+  <header class="entry-head">
+    <div class="entry-kind">
+      <span class="meta">{kind}</span>
+      <span class="meta">{LAYER_LABEL[layer]}</span>
+      <StatusMark status={status} />
+    </div>
+
+    <h1 class="entry-title">{title}</h1>
+    <p class="entry-summary">{summary}</p>
+
+    <dl class="entry-dates">
+      <div>
+        <dt class="meta">{startedLabel}</dt>
+        <dd class="meta">
+          <time datetime={startedAt.toISOString().slice(0, 10)}>{formatDate(startedAt)}</time>
+        </dd>
+      </div>
+      {
+        updatedAt && (
+          <div>
+            <dt class="meta">Updated</dt>
+            <dd class="meta accent">
+              <time datetime={updatedAt.toISOString().slice(0, 10)}>{formatDate(updatedAt)}</time>
+            </dd>
+          </div>
+        )
+      }
+      {
+        tags.length > 0 && (
+          <div class="entry-tags">
+            <dt class="meta">Tags</dt>
+            <dd>
+              {tags.map((t) => (
+                <span class="row-tag">#{t}</span>
+              ))}
+            </dd>
+          </div>
+        )
+      }
+    </dl>
+  </header>
+
+  {
+    relations.length > 0 && (
+      <nav class="relations" aria-label="Related documents">
+        {relations.map((r) => (
+          <a class="relation" href={r.href}>
+            <span class="meta">{r.label}</span>
+            <span class="relation-title">{r.title}</span>
+          </a>
+        ))}
+      </nav>
+    )
+  }
+
+  <div class="entry-body">
+    {
+      toc.length > 1 && (
+        <aside class="toc" aria-label="Contents">
+          <p class="meta">Contents</p>
+          <ol>
+            {toc.map((h) => (
+              <li>
+                <a href={`#${h.slug}`}>{h.text}</a>
+              </li>
+            ))}
+          </ol>
+        </aside>
+      )
+    }
+
+    <div class="prose">
+      <slot />
+    </div>
+  </div>
+
+  <footer class="entry-foot">
+    <slot name="foot" />
+    <p class="byline"><span class="meta">{site.name} · {site.role}</span></p>
+  </footer>
+</article>
+
+<style>
+  .entry {
+    padding-top: 3rem;
+  }
+
+  .entry-kind {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.9rem;
+    margin-bottom: 1rem;
+  }
+
+  .entry-title {
+    font-size: clamp(1.6rem, 1.1rem + 2.3vw, 2.3rem);
+    font-weight: 600;
+    letter-spacing: -0.04em;
+    line-height: 1.3;
+    max-width: 30ch;
+  }
+
+  .entry-summary {
+    margin-top: 1rem;
+    max-width: var(--measure);
+    color: var(--ink-2);
+    font-size: 0.9375rem;
+    line-height: 1.75;
+  }
+
+  /* 날짜를 두 칸으로 나란히 둔다. Updated 가 있다는 사실 자체가 정보다 */
+  .entry-dates {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1.5rem 2.25rem;
+    margin-top: 1.5rem;
+    padding-bottom: 1.75rem;
+    border-bottom: 1px solid var(--line-soft);
+  }
+
+  .entry-dates > div {
+    display: grid;
+    gap: 0.3rem;
+  }
+
+  .entry-dates dd.accent {
+    color: var(--accent-ink);
+  }
+
+  .entry-tags dd {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.4rem 0.8rem;
+  }
+
+  .relations {
+    margin-top: 1.75rem;
+    display: grid;
+    gap: 0.6rem;
+  }
+
+  .relation {
+    display: grid;
+    gap: 0.3rem;
+    padding: 0.85rem 1rem;
+    border: 1px solid var(--line);
+    border-radius: var(--radius-surface);
+    transition:
+      border-color 0.15s ease,
+      background 0.15s ease;
+  }
+  .relation:hover {
+    border-color: var(--accent);
+    background: color-mix(in oklab, var(--accent) 4%, transparent);
+  }
+  .relation-title {
+    font-size: 0.9375rem;
+    font-weight: 500;
+    letter-spacing: -0.015em;
+  }
+
+  .entry-body {
+    margin-top: 2.75rem;
+    display: grid;
+    gap: 2rem;
+  }
+
+  @media (min-width: 64rem) {
+    .entry-body {
+      grid-template-columns: 1fr 12rem;
+      gap: 3.5rem;
+      align-items: start;
+    }
+    .toc {
+      order: 2;
+      position: sticky;
+      top: 5rem;
+    }
+  }
+
+  .toc ol {
+    margin-top: 0.7rem;
+    list-style: none;
+    display: grid;
+    gap: 0.45rem;
+    border-left: 1px solid var(--line);
+    padding-left: 0.9rem;
+  }
+
+  .toc a {
+    font-size: 0.8125rem;
+    line-height: 1.5;
+    color: var(--ink-2);
+  }
+  .toc a:hover {
+    color: var(--accent-ink);
+  }
+
+  @media (max-width: 63.999rem) {
+    .toc {
+      padding: 1rem 1.15rem;
+      border: 1px solid var(--line-soft);
+      border-radius: var(--radius-surface);
+    }
+  }
+
+  .entry-foot {
+    margin-top: 4rem;
+    padding-top: 1.75rem;
+    border-top: 1px solid var(--line-soft);
+  }
+
+  .byline {
+    margin-top: 1.5rem;
+  }
+</style>

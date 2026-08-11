@@ -1,0 +1,66 @@
+---
+import { NOTE_STATUS_NOTE, DECISION_STATUS_NOTE } from '../lib/taxonomy';
+
+interface Props {
+  status: string;
+}
+const { status } = Astro.props;
+const notes: Record<string, string> = { ...NOTE_STATUS_NOTE, ...DECISION_STATUS_NOTE };
+---
+
+<span class="status" data-status={status} title={notes[status]}>
+  <span class="status-dot" aria-hidden="true"></span>{status}
+</span>
+
+<style>
+  .status {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.38em;
+    font-family: var(--font-mono);
+    font-size: 0.625rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--ink-3);
+    white-space: nowrap;
+  }
+
+  .status-dot {
+    width: 5px;
+    height: 5px;
+    border-radius: 50%;
+    background: var(--ink-3);
+    flex: none;
+  }
+
+  /* 확인된 것만 채운 점. 나머지는 비었거나 그어져 있다 */
+  .status[data-status='verified'],
+  .status[data-status='active'] {
+    color: var(--accent-ink);
+  }
+  .status[data-status='verified'] .status-dot,
+  .status[data-status='active'] .status-dot {
+    background: var(--accent);
+  }
+
+  .status[data-status='rough'] .status-dot,
+  .status[data-status='revisit'] .status-dot {
+    background: transparent;
+    box-shadow: inset 0 0 0 1px var(--signal);
+  }
+  .status[data-status='rough'],
+  .status[data-status='revisit'] {
+    color: var(--signal);
+  }
+
+  .status[data-status='overturned'],
+  .status[data-status='superseded'] {
+    text-decoration: line-through;
+    text-decoration-thickness: 1px;
+  }
+  .status[data-status='overturned'] .status-dot,
+  .status[data-status='superseded'] .status-dot {
+    background: transparent;
+    box-shadow: inset 0 0 0 1px var(--ink-3);
+  }
+</style>

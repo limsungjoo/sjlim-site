@@ -1,0 +1,135 @@
+---
+import { href } from '../../lib/href';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import PageHead from '../../components/PageHead.astro';
+import EntryRow from '../../components/EntryRow.astro';
+import { getNotes, groupByLayer, touchedAt } from '../../lib/content';
+import { LAYER_LABEL, LAYER_NOTE, NOTE_STATUS, NOTE_STATUS_NOTE } from '../../lib/taxonomy';
+
+const notes = await getNotes();
+const groups = groupByLayer(notes);
+const verified = notes.filter((n) => n.data.status === 'verified').length;
+---
+
+<BaseLayout
+  title="Notes"
+  description="Things I learned while doing AX work, kept up to date rather than published once."
+>
+  <div class="frame">
+    <PageHead
+      eyebrow="Notes"
+      title="Notes"
+      lead="일하다 알게 된 것을 적어둡니다. 한 번 쓰고 끝내는 글이 아니라 계속 고치는 문서라, 발행일이 아니라 마지막으로 손댄 날 순서로 놓습니다."
+      counts={[`${notes.length} NOTES`, `${verified} VERIFIED`]}
+    />
+
+    <dl class="legend">
+      {
+        NOTE_STATUS.map((s) => (
+          <div class="legend-row">
+            <dt class="meta" data-status={s}>
+              {s}
+            </dt>
+            <dd>{NOTE_STATUS_NOTE[s]}</dd>
+          </div>
+        ))
+      }
+    </dl>
+
+    {
+      groups.map(({ layer, entries }) => (
+        <section class="layer">
+          <div class="sec-head">
+            <h2 class="sec-title">{LAYER_LABEL[layer]}</h2>
+            <span class="meta">{entries.length}</span>
+          </div>
+          <p class="layer-note">{LAYER_NOTE[layer]}</p>
+
+          {entries.length === 0 ? (
+            <p class="empty">아직 없음</p>
+          ) : (
+            <div class="ledger">
+              {entries.map((note) => (
+                <EntryRow
+                  href={href(`/notes/${note.id}/`)}
+                  kind="note"
+                  title={note.data.title}
+                  summary={note.data.summary}
+                  layer={note.data.layer}
+                  status={note.data.status}
+                  touched={touchedAt(note)}
+                  revised={Boolean(note.data.updated)}
+                  tags={note.data.tags}
+                  hideLayer
+                />
+              ))}
+            </div>
+          )}
+        </section>
+      ))
+    }
+  </div>
+</BaseLayout>
+
+<style>
+  .legend {
+    border-top: 1px solid var(--line);
+    border-bottom: 1px solid var(--line);
+    margin-bottom: 2.5rem;
+  }
+
+  .legend-row {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 0.2rem 1.5rem;
+    padding: 0.7rem 0;
+  }
+  .legend-row + .legend-row {
+    border-top: 1px solid var(--line-soft);
+  }
+
+  @media (min-width: 34rem) {
+    .legend-row {
+      grid-template-columns: 7rem 1fr;
+      align-items: baseline;
+    }
+  }
+
+  .legend dt[data-status='verified'] {
+    color: var(--accent-ink);
+  }
+  .legend dt[data-status='rough'] {
+    color: var(--signal);
+  }
+  .legend dt[data-status='overturned'] {
+    text-decoration: line-through;
+  }
+
+  .legend dd {
+    color: var(--ink-2);
+    font-size: 0.9375rem;
+  }
+
+  .layer {
+    margin-top: 3rem;
+  }
+
+  .sec-head {
+    border-bottom: 1px solid var(--line);
+    padding-bottom: 0.7rem;
+  }
+
+  .layer-note {
+    margin: 0.7rem 0 0.4rem;
+    color: var(--ink-3);
+    font-size: 0.875rem;
+  }
+
+  .empty {
+    padding: 1.2rem 0;
+    color: var(--ink-3);
+    font-family: var(--font-mono);
+    font-size: 0.75rem;
+    border-bottom: 1px solid var(--line-soft);
+  }
+</style>

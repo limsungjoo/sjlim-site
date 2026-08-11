@@ -1,0 +1,87 @@
+---
+import StatusMark from './StatusMark.astro';
+import { formatDate } from '../site';
+import { LAYER_LABEL, type Layer } from '../lib/taxonomy';
+
+interface Props {
+  href: string;
+  kind: 'note' | 'decision';
+  title: string;
+  summary: string;
+  layer: Layer;
+  status: string;
+  touched: Date;
+  /** touched 가 최초 작성일과 다르면 true. 목록에서 '고쳤음'을 표시한다 */
+  revised?: boolean;
+  tags?: string[];
+  /** 홈 스트림에서만 타입 칩을 보여준다 */
+  showKind?: boolean;
+  /** 이미 층별로 묶인 목록에서는 층 표시가 중복이라 끈다 */
+  hideLayer?: boolean;
+}
+
+const {
+  href,
+  kind,
+  title,
+  summary,
+  layer,
+  status,
+  touched,
+  revised = false,
+  tags = [],
+  showKind = false,
+  hideLayer = false,
+} = Astro.props;
+---
+
+<article class="row">
+  <div class="row-rail">
+    <time class="meta" datetime={touched.toISOString().slice(0, 10)}>
+      {formatDate(touched)}{revised && <span class="revised" title="고쳐 쓴 날">*</span>}
+    </time>
+    <StatusMark status={status} />
+    {
+      showKind ? (
+        <span class="meta kind" data-kind={kind}>
+          {kind}
+        </span>
+      ) : (
+        !hideLayer && <span class="meta">{LAYER_LABEL[layer]}</span>
+      )
+    }
+  </div>
+
+  <div>
+    <h3 class="row-title">
+      <a href={href} class="row-link">{title}</a>
+    </h3>
+    <p class="row-summary">{summary}</p>
+    {
+      tags.length > 0 && (
+        <ul class="row-tags">
+          {tags.map((t) => (
+            <li class="row-tag">#{t}</li>
+          ))}
+        </ul>
+      )
+    }
+  </div>
+</article>
+
+<style>
+  .row-link::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+  }
+
+  .revised {
+    color: var(--accent);
+    margin-left: 1px;
+  }
+
+  .kind[data-kind='decision'] {
+    color: var(--accent-ink);
+  }
+</style>

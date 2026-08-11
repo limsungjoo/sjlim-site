@@ -1,0 +1,82 @@
+---
+import { render } from 'astro:content';
+import { href } from '../../lib/href';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import EntryPage from '../../components/EntryPage.astro';
+import { getNotes } from '../../lib/content';
+import { LAYER_LABEL } from '../../lib/taxonomy';
+
+export async function getStaticPaths() {
+  const notes = await getNotes();
+  return notes.map((note) => ({ params: { slug: note.id }, props: { note } }));
+}
+
+const { note } = Astro.props;
+const { Content, headings } = await render(note);
+const toc = headings.filter((h) => h.depth === 2);
+
+// 같은 층의 다른 노트를 아래에 붙인다. 태그보다 층이 안정적이라 링크가 안 썩는다.
+const all = await getNotes();
+const sameLayer = all.filter((n) => n.id !== note.id && n.data.layer === note.data.layer).slice(0, 4);
+---
+
+<BaseLayout title={note.data.title} description={note.data.summary} type="article">
+  <EntryPage
+    kind="note"
+    title={note.data.title}
+    summary={note.data.summary}
+    layer={note.data.layer}
+    status={note.data.status}
+    startedAt={note.data.created}
+    startedLabel="Written"
+    updatedAt={note.data.updated}
+    tags={note.data.tags}
+    toc={toc}
+  >
+    <Content />
+
+    <Fragment slot="foot">
+      {
+        sameLayer.length > 0 && (
+          <section class="more">
+            <div class="sec-head">
+              <h2 class="sec-title">More in {LAYER_LABEL[note.data.layer]}</h2>
+              <a class="link-more" href={href('/notes/')}>
+                All notes →
+              </a>
+            </div>
+            <ul class="more-list">
+              {sameLayer.map((n) => (
+                <li>
+                  <a href={href(`/notes/${n.id}/`)}>{n.data.title}</a>
+                </li>
+              ))}
+            </ul>
+          </section>
+        )
+      }
+    </Fragment>
+  </EntryPage>
+</BaseLayout>
+
+<style>
+  .sec-head {
+    border-bottom: 1px solid var(--line-soft);
+    padding-bottom: 0.7rem;
+  }
+
+  .more-list {
+    list-style: none;
+    margin-top: 0.5rem;
+  }
+
+  .more-list li {
+    padding: 0.7rem 0;
+    border-bottom: 1px solid var(--line-soft);
+    font-size: 0.9375rem;
+  }
+
+  .more-list a:hover {
+    color: var(--accent-ink);
+  }
+</style>
