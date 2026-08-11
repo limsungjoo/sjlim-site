@@ -1,0 +1,68 @@
+<!DOCTYPE html><html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>기록을 믿지 않고 저장소를 본다 — sjlim</title><meta name="description" content="실험 기록에 적힌 파일 경로가 실제로 그 파일을 가리키는지 확인하지 않으면, 검증은 기록이 기록을 확인하는 순환이 된다. 확인 지점을 어디로 옮겼는지 적는다."><link rel="canonical" href="https://limsungjoo.github.io/sjlim-site/writing/trust-the-store-not-the-record/"><meta name="generator" content="Astro v7.2.0"><meta name="color-scheme" content="light dark"><meta name="theme-color" content="#f8f9fb" media="(prefers-color-scheme: light)"><meta name="theme-color" content="#1b1e24" media="(prefers-color-scheme: dark)"><meta property="og:type" content="article"><meta property="og:locale" content="ko_KR"><meta property="og:site_name" content="Sungjoo Lim — MLOps &amp; AX Engineer"><meta property="og:url" content="https://limsungjoo.github.io/sjlim-site/writing/trust-the-store-not-the-record/"><meta property="og:title" content="기록을 믿지 않고 저장소를 본다 — sjlim"><meta property="og:description" content="실험 기록에 적힌 파일 경로가 실제로 그 파일을 가리키는지 확인하지 않으면, 검증은 기록이 기록을 확인하는 순환이 된다. 확인 지점을 어디로 옮겼는지 적는다."><meta name="twitter:card" content="summary_large_image"><link rel="icon" type="image/svg+xml" href="/sjlim-site/favicon.svg"><link rel="alternate" type="application/rss+xml" title="Sungjoo Lim — MLOps &amp; AX Engineer" href="/sjlim-site/rss.xml"><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans+KR:wght@400;500;600;700&family=IBM+Plex+Sans:wght@400;500;600;700&display=swap"><script>
+      (() => {
+        try {
+          const saved = localStorage.getItem('theme');
+          if (saved === 'light' || saved === 'dark') {
+            document.documentElement.dataset.theme = saved;
+          }
+        } catch {}
+      })();
+    </script><link rel="stylesheet" href="/sjlim-site/_astro/BaseLayout.BYuZglrp.css"><style>.article[data-astro-cid-s4ha2ih2]{padding-top:3rem}.head-tags[data-astro-cid-s4ha2ih2]{flex-wrap:wrap;gap:.4rem .9rem;margin-bottom:1rem;list-style:none;display:flex}.article-title[data-astro-cid-s4ha2ih2]{letter-spacing:-.04em;max-width:34ch;font-size:clamp(1.7rem,1.1rem + 2.6vw,2.45rem);font-weight:600;line-height:1.28}.article-summary[data-astro-cid-s4ha2ih2]{max-width:var(--measure);color:var(--ink-2);margin-top:1rem;font-size:.9375rem;line-height:1.75}.article-meta[data-astro-cid-s4ha2ih2]{border-bottom:1px solid var(--line-soft);flex-wrap:wrap;gap:1rem;margin-top:1.25rem;padding-bottom:1.75rem;display:flex}.series-spine[data-astro-cid-s4ha2ih2]{border:1px solid var(--line);border-radius:var(--radius-surface);background:color-mix(in oklab, var(--accent) 3.5%, transparent);margin-top:2rem;padding:1.1rem 1.25rem}.spine-head[data-astro-cid-s4ha2ih2]{color:var(--accent-ink)}.series-spine[data-astro-cid-s4ha2ih2] ol[data-astro-cid-s4ha2ih2]{margin-top:.7rem;list-style:none;position:relative}.series-spine[data-astro-cid-s4ha2ih2] ol[data-astro-cid-s4ha2ih2]:before{content:"";background:var(--line);width:1px;position:absolute;top:.85rem;bottom:.85rem;left:3px}.spine-item[data-astro-cid-s4ha2ih2]{color:var(--ink-2);grid-template-columns:1.9rem 1fr;align-items:baseline;gap:.5rem;padding:.32rem 0 .32rem 1.15rem;font-size:.9rem;display:grid;position:relative}.spine-item[data-astro-cid-s4ha2ih2]:before{content:"";background:var(--line);border-radius:50%;width:7px;height:7px;position:absolute;top:.72em;left:0}.spine-item[data-astro-cid-s4ha2ih2].current{color:var(--ink);font-weight:600}.spine-item[data-astro-cid-s4ha2ih2].current:before{background:var(--accent)}.spine-item[data-astro-cid-s4ha2ih2].current .spine-no[data-astro-cid-s4ha2ih2]{color:var(--accent)}.spine-item[data-astro-cid-s4ha2ih2] a[data-astro-cid-s4ha2ih2]:hover{color:var(--accent-ink)}.article-body[data-astro-cid-s4ha2ih2]{gap:2rem;margin-top:2.75rem;display:grid}@media (width>=64rem){.article-body[data-astro-cid-s4ha2ih2]{grid-template-columns:1fr 12rem;align-items:start;gap:3.5rem}.toc[data-astro-cid-s4ha2ih2]{order:2;position:sticky;top:5rem}}.toc[data-astro-cid-s4ha2ih2] ol[data-astro-cid-s4ha2ih2]{border-left:1px solid var(--line);gap:.45rem;margin-top:.7rem;padding-left:.9rem;list-style:none;display:grid}.toc[data-astro-cid-s4ha2ih2] a[data-astro-cid-s4ha2ih2]{color:var(--ink-2);font-size:.8125rem;line-height:1.5}.toc[data-astro-cid-s4ha2ih2] a[data-astro-cid-s4ha2ih2]:hover{color:var(--accent-ink)}@media (width<=63.999rem){.toc[data-astro-cid-s4ha2ih2]{border:1px solid var(--line-soft);border-radius:var(--radius-surface);padding:1rem 1.15rem}}.article-foot[data-astro-cid-s4ha2ih2]{border-top:1px solid var(--line-soft);margin-top:4rem;padding-top:1.75rem}.pager[data-astro-cid-s4ha2ih2]{gap:1rem;display:grid}@media (width>=40rem){.pager[data-astro-cid-s4ha2ih2]{grid-template-columns:1fr 1fr}}.pager-item[data-astro-cid-s4ha2ih2]{border:1px solid var(--line);border-radius:var(--radius-surface);gap:.4rem;padding:1rem 1.1rem;transition:border-color .15s,background .15s;display:grid}.pager-item[data-astro-cid-s4ha2ih2]:hover{border-color:var(--accent);background:color-mix(in oklab, var(--accent) 4%, transparent)}.pager-next[data-astro-cid-s4ha2ih2]{text-align:right}.pager-title[data-astro-cid-s4ha2ih2]{letter-spacing:-.015em;font-size:.9375rem;font-weight:500;line-height:1.5}.byline[data-astro-cid-s4ha2ih2]{margin-top:1.75rem}
+</style></head><body><a class="skip" href="#main">Skip to content</a><header class="site-header" data-astro-cid-fzpbxy5g><div class="frame header-inner" data-astro-cid-fzpbxy5g><a href="/sjlim-site/" class="brand" aria-label="sjlim home" data-astro-cid-fzpbxy5g><span class="brand-name" data-astro-cid-fzpbxy5g>sjlim</span><span class="brand-slash" data-astro-cid-fzpbxy5g>/</span></a><nav aria-label="Main" class="nav" data-astro-cid-fzpbxy5g><a href="/sjlim-site/portfolio/" class="nav-link" data-astro-cid-fzpbxy5g>Portfolio</a><a href="/sjlim-site/writing/" class="nav-link" aria-current="page" data-astro-cid-fzpbxy5g>Writing</a><a href="/sjlim-site/notes/" class="nav-link" data-astro-cid-fzpbxy5g>Notes</a></nav><button type="button" class="theme-toggle" data-theme-toggle aria-label="Toggle theme" data-astro-cid-l6lhmie6><span class="theme-dot" aria-hidden="true" data-astro-cid-l6lhmie6></span></button><script>
+  (() => {
+    const btn = document.querySelector('[data-theme-toggle]');
+    if (!btn) return;
+
+    const current = () => {
+      const set = document.documentElement.dataset.theme;
+      if (set) return set;
+      return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+    };
+
+    const sync = () => btn.setAttribute('aria-pressed', String(current() === 'dark'));
+    sync();
+
+    btn.addEventListener('click', () => {
+      const next = current() === 'dark' ? 'light' : 'dark';
+      document.documentElement.dataset.theme = next;
+      try {
+        localStorage.setItem('theme', next);
+      } catch {}
+      sync();
+    });
+  })();
+</script></div></header><main id="main"><article class="frame article" data-astro-cid-s4ha2ih2><header class="article-head" data-astro-cid-s4ha2ih2><ul class="head-tags" data-astro-cid-s4ha2ih2><li class="row-tag" data-astro-cid-s4ha2ih2>#MLOps</li><li class="row-tag" data-astro-cid-s4ha2ih2>#검증</li><li class="row-tag" data-astro-cid-s4ha2ih2>#스토리지</li></ul><h1 class="article-title" data-astro-cid-s4ha2ih2>기록을 믿지 않고 저장소를 본다</h1><p class="article-summary" data-astro-cid-s4ha2ih2>실험 기록에 적힌 파일 경로가 실제로 그 파일을 가리키는지 확인하지 않으면, 검증은 기록이 기록을 확인하는 순환이 된다. 확인 지점을 어디로 옮겼는지 적는다.</p><div class="article-meta" data-astro-cid-s4ha2ih2><time class="meta" datetime="2026-07-21" data-astro-cid-s4ha2ih2>2026.07.21</time><span class="meta" data-astro-cid-s4ha2ih2>1 MIN</span><span class="meta" data-astro-cid-s4ha2ih2>실험을 증명하는 법</span></div></header><nav class="series-spine" aria-label="Series contents" data-astro-cid-s4ha2ih2><p class="meta spine-head" data-astro-cid-s4ha2ih2>실험을 증명하는 법</p><ol data-astro-cid-s4ha2ih2><li class="spine-item" data-astro-cid-s4ha2ih2><span class="meta spine-no" data-astro-cid-s4ha2ih2>01</span><a href="/sjlim-site/writing/what-reproducible-proves/" data-astro-cid-s4ha2ih2>재현 가능하다는 말은 무엇을 증명하는가</a></li><li class="spine-item current" data-astro-cid-s4ha2ih2><span class="meta spine-no" data-astro-cid-s4ha2ih2>02</span><span aria-current="true" data-astro-cid-s4ha2ih2>기록을 믿지 않고 저장소를 본다</span></li><li class="spine-item" data-astro-cid-s4ha2ih2><span class="meta spine-no" data-astro-cid-s4ha2ih2>03</span><a href="/sjlim-site/writing/tests-that-pass-for-nothing/" data-astro-cid-s4ha2ih2>통과하는 실패 테스트</a></li></ol></nav><div class="article-body" data-astro-cid-s4ha2ih2><aside class="toc" aria-label="Contents" data-astro-cid-s4ha2ih2><p class="meta" data-astro-cid-s4ha2ih2>Contents</p><ol data-astro-cid-s4ha2ih2><li data-astro-cid-s4ha2ih2><a href="#순환이-생기는-지점" data-astro-cid-s4ha2ih2>순환이 생기는 지점</a></li><li data-astro-cid-s4ha2ih2><a href="#확인-지점을-옮겼다" data-astro-cid-s4ha2ih2>확인 지점을 옮겼다</a></li><li data-astro-cid-s4ha2ih2><a href="#잘못된-안전장치" data-astro-cid-s4ha2ih2>잘못된 안전장치</a></li><li data-astro-cid-s4ha2ih2><a href="#남은-원칙" data-astro-cid-s4ha2ih2>남은 원칙</a></li></ol></aside><div class="prose" data-astro-cid-s4ha2ih2><p>실험 기록에는 산출물이 어디 있는지 적히는 칸이 있다.
+그 칸을 읽고 “파일이 저장돼 있다”고 판단하는 검증을 한동안 썼다.</p>
+<p>이 검증은 아무것도 확인하지 않는다.
+기록에 경로가 적혔다는 사실만 확인할 뿐, 그 경로에 파일이 있는지는 보지 않는다.</p>
+<h2 id="순환이-생기는-지점">순환이 생기는 지점</h2>
+<p>문제가 드러난 계기는 단순했다.
+기록상으로는 모든 산출물이 원격 저장소에 있었는데, 실제 저장소에는 절반이 없었다.</p>
+<p>업로드는 실패했지만 기록은 성공으로 남아 있었다.
+기록을 쓰는 코드와 파일을 올리는 코드가 서로의 결과를 확인하지 않았기 때문이다.</p>
+<p>정리하면 이렇다.</p>
+<pre class="astro-code astro-code-themes github-light github-dark-dimmed" style="background-color:#fff;--shiki-dark-bg:#22272e;color:#24292e;--shiki-dark:#adbac7; overflow-x: auto; white-space: pre-wrap; word-wrap: break-word;" tabindex="0" data-language="plaintext"><code><span class="line"><span>기록 검증  : record.path 가 있는가        → 항상 통과</span></span>
+<span class="line"><span>실제 검증  : 그 경로에 객체가 있는가       → 절반 실패</span></span></code></pre>
+<p>앞의 검사는 기록의 자기 참조다.
+검증은 기록 바깥의 사실을 봐야 한다.</p>
+<h2 id="확인-지점을-옮겼다">확인 지점을 옮겼다</h2>
+<p>검사를 저장소 쪽으로 옮기면서 두 가지를 같이 바꿨다.</p>
+<p>첫째, 존재 확인은 객체 자체를 조회한다.
+목록 조회로 대체하지 않는다.
+목록 조회는 접근 거부, 잘못된 리전, 네트워크 오류를 전부 “없음”으로 뭉개서 돌려주기 때문에 실패 원인을 지운다.</p>
+<p>둘째, 실패는 표준 에러로 남긴다.
+조용히 넘어가는 검증은 통과한 검증과 구분되지 않는다.</p>
+<h2 id="잘못된-안전장치">잘못된 안전장치</h2>
+<p>이 과정에서 걷어낸 코드가 하나 있다.
+존재 확인이 실패하면 잠시 뒤 다시 시도하고, 그래도 없으면 경고만 남기고 통과시키는 로직이었다.</p>
+<p>의도는 일시적인 오류를 넘기려는 것이었다.
+결과는 진짜 누락도 같이 넘어갔다.</p>
+<p>저장소가 강한 일관성을 보장하는데도 “전파 지연일 수 있으니 한 번 더”라는 가정을 붙여둔 코드였다.
+가정이 틀렸다는 것보다, 그 가정 때문에 실패가 경고로 낮아졌다는 쪽이 더 문제였다.</p>
+<h2 id="남은-원칙">남은 원칙</h2>
+<p>검증을 짤 때 스스로에게 묻는 문장이 하나 생겼다.</p>
+<blockquote>
+<p>이 검사는 기록을 확인하는가, 사실을 확인하는가.</p>
+</blockquote>
+<p>기록을 확인하고 있다면 그것은 검증이 아니라 옮겨 적기다.</p>
+</div></div><footer class="article-foot" data-astro-cid-s4ha2ih2><nav class="pager" aria-label="Adjacent posts" data-astro-cid-s4ha2ih2><a class="pager-item" href="/sjlim-site/writing/what-reproducible-proves/" data-astro-cid-s4ha2ih2><span class="meta" data-astro-cid-s4ha2ih2>← Previous</span><span class="pager-title" data-astro-cid-s4ha2ih2>재현 가능하다는 말은 무엇을 증명하는가</span></a><a class="pager-item pager-next" href="/sjlim-site/writing/tests-that-pass-for-nothing/" data-astro-cid-s4ha2ih2><span class="meta" data-astro-cid-s4ha2ih2>Next →</span><span class="pager-title" data-astro-cid-s4ha2ih2>통과하는 실패 테스트</span></a></nav><p class="byline" data-astro-cid-s4ha2ih2><span class="meta" data-astro-cid-s4ha2ih2>Sungjoo Lim · MLOps &amp; AX Engineer</span></p></footer></article></main><footer class="site-footer" data-astro-cid-nns7i3if><div class="frame footer-inner" data-astro-cid-nns7i3if><p class="meta" data-astro-cid-nns7i3if>© 2026 Sungjoo Lim</p><ul class="footer-links" data-astro-cid-nns7i3if><li data-astro-cid-nns7i3if><a href="https://github.com/limsungjoo" rel="me noopener" data-astro-cid-nns7i3if>GitHub</a></li><li data-astro-cid-nns7i3if><a href="https://www.linkedin.com/" rel="me noopener" data-astro-cid-nns7i3if>LinkedIn</a></li><li data-astro-cid-nns7i3if><a href="mailto:hello@example.com" data-astro-cid-nns7i3if>Email</a></li><li data-astro-cid-nns7i3if><a href="/sjlim-site/rss.xml" data-astro-cid-nns7i3if>RSS</a></li></ul></div></footer></body></html>

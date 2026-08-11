@@ -1,0 +1,87 @@
+<!DOCTYPE html><html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>통과하는 실패 테스트 — sjlim</title><meta name="description" content="잘못된 입력을 거부하는지 확인하는 테스트가 통과했다고 그 거부가 실제로 동작하는 것은 아니다. 검사기를 일부러 고장 내서 테스트를 다시 채점한 기록."><link rel="canonical" href="https://limsungjoo.github.io/sjlim-site/writing/tests-that-pass-for-nothing/"><meta name="generator" content="Astro v7.2.0"><meta name="color-scheme" content="light dark"><meta name="theme-color" content="#f8f9fb" media="(prefers-color-scheme: light)"><meta name="theme-color" content="#1b1e24" media="(prefers-color-scheme: dark)"><meta property="og:type" content="article"><meta property="og:locale" content="ko_KR"><meta property="og:site_name" content="Sungjoo Lim — MLOps &amp; AX Engineer"><meta property="og:url" content="https://limsungjoo.github.io/sjlim-site/writing/tests-that-pass-for-nothing/"><meta property="og:title" content="통과하는 실패 테스트 — sjlim"><meta property="og:description" content="잘못된 입력을 거부하는지 확인하는 테스트가 통과했다고 그 거부가 실제로 동작하는 것은 아니다. 검사기를 일부러 고장 내서 테스트를 다시 채점한 기록."><meta name="twitter:card" content="summary_large_image"><link rel="icon" type="image/svg+xml" href="/sjlim-site/favicon.svg"><link rel="alternate" type="application/rss+xml" title="Sungjoo Lim — MLOps &amp; AX Engineer" href="/sjlim-site/rss.xml"><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans+KR:wght@400;500;600;700&family=IBM+Plex+Sans:wght@400;500;600;700&display=swap"><script>
+      (() => {
+        try {
+          const saved = localStorage.getItem('theme');
+          if (saved === 'light' || saved === 'dark') {
+            document.documentElement.dataset.theme = saved;
+          }
+        } catch {}
+      })();
+    </script><link rel="stylesheet" href="/sjlim-site/_astro/BaseLayout.BYuZglrp.css"><style>.article[data-astro-cid-s4ha2ih2]{padding-top:3rem}.head-tags[data-astro-cid-s4ha2ih2]{flex-wrap:wrap;gap:.4rem .9rem;margin-bottom:1rem;list-style:none;display:flex}.article-title[data-astro-cid-s4ha2ih2]{letter-spacing:-.04em;max-width:34ch;font-size:clamp(1.7rem,1.1rem + 2.6vw,2.45rem);font-weight:600;line-height:1.28}.article-summary[data-astro-cid-s4ha2ih2]{max-width:var(--measure);color:var(--ink-2);margin-top:1rem;font-size:.9375rem;line-height:1.75}.article-meta[data-astro-cid-s4ha2ih2]{border-bottom:1px solid var(--line-soft);flex-wrap:wrap;gap:1rem;margin-top:1.25rem;padding-bottom:1.75rem;display:flex}.series-spine[data-astro-cid-s4ha2ih2]{border:1px solid var(--line);border-radius:var(--radius-surface);background:color-mix(in oklab, var(--accent) 3.5%, transparent);margin-top:2rem;padding:1.1rem 1.25rem}.spine-head[data-astro-cid-s4ha2ih2]{color:var(--accent-ink)}.series-spine[data-astro-cid-s4ha2ih2] ol[data-astro-cid-s4ha2ih2]{margin-top:.7rem;list-style:none;position:relative}.series-spine[data-astro-cid-s4ha2ih2] ol[data-astro-cid-s4ha2ih2]:before{content:"";background:var(--line);width:1px;position:absolute;top:.85rem;bottom:.85rem;left:3px}.spine-item[data-astro-cid-s4ha2ih2]{color:var(--ink-2);grid-template-columns:1.9rem 1fr;align-items:baseline;gap:.5rem;padding:.32rem 0 .32rem 1.15rem;font-size:.9rem;display:grid;position:relative}.spine-item[data-astro-cid-s4ha2ih2]:before{content:"";background:var(--line);border-radius:50%;width:7px;height:7px;position:absolute;top:.72em;left:0}.spine-item[data-astro-cid-s4ha2ih2].current{color:var(--ink);font-weight:600}.spine-item[data-astro-cid-s4ha2ih2].current:before{background:var(--accent)}.spine-item[data-astro-cid-s4ha2ih2].current .spine-no[data-astro-cid-s4ha2ih2]{color:var(--accent)}.spine-item[data-astro-cid-s4ha2ih2] a[data-astro-cid-s4ha2ih2]:hover{color:var(--accent-ink)}.article-body[data-astro-cid-s4ha2ih2]{gap:2rem;margin-top:2.75rem;display:grid}@media (width>=64rem){.article-body[data-astro-cid-s4ha2ih2]{grid-template-columns:1fr 12rem;align-items:start;gap:3.5rem}.toc[data-astro-cid-s4ha2ih2]{order:2;position:sticky;top:5rem}}.toc[data-astro-cid-s4ha2ih2] ol[data-astro-cid-s4ha2ih2]{border-left:1px solid var(--line);gap:.45rem;margin-top:.7rem;padding-left:.9rem;list-style:none;display:grid}.toc[data-astro-cid-s4ha2ih2] a[data-astro-cid-s4ha2ih2]{color:var(--ink-2);font-size:.8125rem;line-height:1.5}.toc[data-astro-cid-s4ha2ih2] a[data-astro-cid-s4ha2ih2]:hover{color:var(--accent-ink)}@media (width<=63.999rem){.toc[data-astro-cid-s4ha2ih2]{border:1px solid var(--line-soft);border-radius:var(--radius-surface);padding:1rem 1.15rem}}.article-foot[data-astro-cid-s4ha2ih2]{border-top:1px solid var(--line-soft);margin-top:4rem;padding-top:1.75rem}.pager[data-astro-cid-s4ha2ih2]{gap:1rem;display:grid}@media (width>=40rem){.pager[data-astro-cid-s4ha2ih2]{grid-template-columns:1fr 1fr}}.pager-item[data-astro-cid-s4ha2ih2]{border:1px solid var(--line);border-radius:var(--radius-surface);gap:.4rem;padding:1rem 1.1rem;transition:border-color .15s,background .15s;display:grid}.pager-item[data-astro-cid-s4ha2ih2]:hover{border-color:var(--accent);background:color-mix(in oklab, var(--accent) 4%, transparent)}.pager-next[data-astro-cid-s4ha2ih2]{text-align:right}.pager-title[data-astro-cid-s4ha2ih2]{letter-spacing:-.015em;font-size:.9375rem;font-weight:500;line-height:1.5}.byline[data-astro-cid-s4ha2ih2]{margin-top:1.75rem}
+</style></head><body><a class="skip" href="#main">Skip to content</a><header class="site-header" data-astro-cid-fzpbxy5g><div class="frame header-inner" data-astro-cid-fzpbxy5g><a href="/sjlim-site/" class="brand" aria-label="sjlim home" data-astro-cid-fzpbxy5g><span class="brand-name" data-astro-cid-fzpbxy5g>sjlim</span><span class="brand-slash" data-astro-cid-fzpbxy5g>/</span></a><nav aria-label="Main" class="nav" data-astro-cid-fzpbxy5g><a href="/sjlim-site/portfolio/" class="nav-link" data-astro-cid-fzpbxy5g>Portfolio</a><a href="/sjlim-site/writing/" class="nav-link" aria-current="page" data-astro-cid-fzpbxy5g>Writing</a><a href="/sjlim-site/notes/" class="nav-link" data-astro-cid-fzpbxy5g>Notes</a></nav><button type="button" class="theme-toggle" data-theme-toggle aria-label="Toggle theme" data-astro-cid-l6lhmie6><span class="theme-dot" aria-hidden="true" data-astro-cid-l6lhmie6></span></button><script>
+  (() => {
+    const btn = document.querySelector('[data-theme-toggle]');
+    if (!btn) return;
+
+    const current = () => {
+      const set = document.documentElement.dataset.theme;
+      if (set) return set;
+      return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+    };
+
+    const sync = () => btn.setAttribute('aria-pressed', String(current() === 'dark'));
+    sync();
+
+    btn.addEventListener('click', () => {
+      const next = current() === 'dark' ? 'light' : 'dark';
+      document.documentElement.dataset.theme = next;
+      try {
+        localStorage.setItem('theme', next);
+      } catch {}
+      sync();
+    });
+  })();
+</script></div></header><main id="main"><article class="frame article" data-astro-cid-s4ha2ih2><header class="article-head" data-astro-cid-s4ha2ih2><ul class="head-tags" data-astro-cid-s4ha2ih2><li class="row-tag" data-astro-cid-s4ha2ih2>#테스트</li><li class="row-tag" data-astro-cid-s4ha2ih2>#검증</li><li class="row-tag" data-astro-cid-s4ha2ih2>#MLOps</li></ul><h1 class="article-title" data-astro-cid-s4ha2ih2>통과하는 실패 테스트</h1><p class="article-summary" data-astro-cid-s4ha2ih2>잘못된 입력을 거부하는지 확인하는 테스트가 통과했다고 그 거부가 실제로 동작하는 것은 아니다. 검사기를 일부러 고장 내서 테스트를 다시 채점한 기록.</p><div class="article-meta" data-astro-cid-s4ha2ih2><time class="meta" datetime="2026-07-28" data-astro-cid-s4ha2ih2>2026.07.28</time><span class="meta" data-astro-cid-s4ha2ih2>1 MIN</span><span class="meta" data-astro-cid-s4ha2ih2>실험을 증명하는 법</span></div></header><nav class="series-spine" aria-label="Series contents" data-astro-cid-s4ha2ih2><p class="meta spine-head" data-astro-cid-s4ha2ih2>실험을 증명하는 법</p><ol data-astro-cid-s4ha2ih2><li class="spine-item" data-astro-cid-s4ha2ih2><span class="meta spine-no" data-astro-cid-s4ha2ih2>01</span><a href="/sjlim-site/writing/what-reproducible-proves/" data-astro-cid-s4ha2ih2>재현 가능하다는 말은 무엇을 증명하는가</a></li><li class="spine-item" data-astro-cid-s4ha2ih2><span class="meta spine-no" data-astro-cid-s4ha2ih2>02</span><a href="/sjlim-site/writing/trust-the-store-not-the-record/" data-astro-cid-s4ha2ih2>기록을 믿지 않고 저장소를 본다</a></li><li class="spine-item current" data-astro-cid-s4ha2ih2><span class="meta spine-no" data-astro-cid-s4ha2ih2>03</span><span aria-current="true" data-astro-cid-s4ha2ih2>통과하는 실패 테스트</span></li></ol></nav><div class="article-body" data-astro-cid-s4ha2ih2><aside class="toc" aria-label="Contents" data-astro-cid-s4ha2ih2><p class="meta" data-astro-cid-s4ha2ih2>Contents</p><ol data-astro-cid-s4ha2ih2><li data-astro-cid-s4ha2ih2><a href="#왜-통과했는가" data-astro-cid-s4ha2ih2>왜 통과했는가</a></li><li data-astro-cid-s4ha2ih2><a href="#검사기를-고장-내서-채점했다" data-astro-cid-s4ha2ih2>검사기를 고장 내서 채점했다</a></li><li data-astro-cid-s4ha2ih2><a href="#규칙으로-남긴-것" data-astro-cid-s4ha2ih2>규칙으로 남긴 것</a></li></ol></aside><div class="prose" data-astro-cid-s4ha2ih2><p>기록 규약을 강제하는 검사기에 실패 케이스 테스트를 서른 개 넘게 붙였다.
+필수 필드가 빠진 입력, 타입이 틀린 입력, 중복된 식별자를 각각 넣고 거부되는지 확인하는 테스트였다.</p>
+<p>전부 통과했다.
+그런데 실제 규약 위반이 검사기를 그냥 지나가는 일이 계속 생겼다.</p>
+<h2 id="왜-통과했는가">왜 통과했는가</h2>
+<p>테스트가 확인한 것은 “거부됐다”였다.
+무슨 이유로 거부됐는지는 확인하지 않았다.</p>
+<p>예를 들어 필수 필드 하나가 빠진 입력을 넣었는데, 그 입력에는 다른 문법 오류도 함께 있었다.
+검사기는 문법 오류에서 먼저 걸렸고, 필수 필드 검사는 실행되지도 않았다.
+테스트는 거부를 봤으니 통과했다.</p>
+<p>이런 테스트를 세 가지 형태로 만났다.</p>
+<ul>
+<li>여러 오류가 겹친 입력이라 어느 규칙이 잡았는지 모르는 경우</li>
+<li>거부 여부만 보고 오류 메시지나 코드를 확인하지 않는 경우</li>
+<li>픽스처가 이미 다른 이유로 무효라서 해당 규칙과 무관하게 실패하는 경우</li>
+</ul>
+<p>셋 다 테스트는 초록색이었다.</p>
+<h2 id="검사기를-고장-내서-채점했다">검사기를 고장 내서 채점했다</h2>
+<p>테스트가 무엇을 잡는지 알려면 잡을 것을 없애보면 된다.</p>
+<p>검사기에서 규칙을 하나씩 꺼놓고 전체 테스트를 돌렸다.
+규칙을 껐는데도 테스트가 전부 통과하면, 그 규칙을 지키는 테스트는 없는 것이다.</p>
+<p>여덟 개 규칙을 껐을 때 결과는 이랬다.</p>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>결과</th>
+<th>개수</th>
+<th>의미</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>테스트 실패</td>
+<td>6</td>
+<td>해당 규칙을 실제로 지키고 있음</td>
+</tr>
+<tr>
+<td>테스트 통과</td>
+<td>2</td>
+<td>규칙이 사라져도 아무도 눈치채지 못함</td>
+</tr>
+</tbody>
+</table></div>
+<p>살아남은 두 개가 문제였다.
+각각 테스트를 다시 짰고, 이번에는 거부 여부가 아니라 거부 사유를 단언하게 했다.</p>
+<h2 id="규칙으로-남긴-것">규칙으로 남긴 것</h2>
+<p>실패 케이스 테스트는 다음 두 가지를 지키게 했다.</p>
+<ol>
+<li>입력에는 검사 대상 위반 하나만 넣는다</li>
+<li>통과 여부가 아니라 오류 식별자를 단언한다</li>
+</ol>
+<p>그리고 실패 케이스가 늘어날 때마다 검사기를 고장 내는 검사를 한 번 돌린다.
+테스트가 늘어났다는 사실은 커버리지가 늘었다는 증거가 아니다.</p>
+</div></div><footer class="article-foot" data-astro-cid-s4ha2ih2><nav class="pager" aria-label="Adjacent posts" data-astro-cid-s4ha2ih2><a class="pager-item" href="/sjlim-site/writing/trust-the-store-not-the-record/" data-astro-cid-s4ha2ih2><span class="meta" data-astro-cid-s4ha2ih2>← Previous</span><span class="pager-title" data-astro-cid-s4ha2ih2>기록을 믿지 않고 저장소를 본다</span></a></nav><p class="byline" data-astro-cid-s4ha2ih2><span class="meta" data-astro-cid-s4ha2ih2>Sungjoo Lim · MLOps &amp; AX Engineer</span></p></footer></article></main><footer class="site-footer" data-astro-cid-nns7i3if><div class="frame footer-inner" data-astro-cid-nns7i3if><p class="meta" data-astro-cid-nns7i3if>© 2026 Sungjoo Lim</p><ul class="footer-links" data-astro-cid-nns7i3if><li data-astro-cid-nns7i3if><a href="https://github.com/limsungjoo" rel="me noopener" data-astro-cid-nns7i3if>GitHub</a></li><li data-astro-cid-nns7i3if><a href="https://www.linkedin.com/" rel="me noopener" data-astro-cid-nns7i3if>LinkedIn</a></li><li data-astro-cid-nns7i3if><a href="mailto:hello@example.com" data-astro-cid-nns7i3if>Email</a></li><li data-astro-cid-nns7i3if><a href="/sjlim-site/rss.xml" data-astro-cid-nns7i3if>RSS</a></li></ul></div></footer></body></html>

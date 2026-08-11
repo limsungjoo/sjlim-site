@@ -1,0 +1,65 @@
+<!DOCTYPE html><html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>idle 은 시간이 아니라 상태다 — sjlim</title><meta name="description" content="켜둔 지 네 시간이 지나면 끄는 규칙은 밤새 학습 중인 워크스페이스도 같이 껐다. 무엇을 놀고 있다고 부를지 다시 정의한 과정."><link rel="canonical" href="https://limsungjoo.github.io/sjlim-site/writing/idle-is-a-state/"><meta name="generator" content="Astro v7.2.0"><meta name="color-scheme" content="light dark"><meta name="theme-color" content="#f8f9fb" media="(prefers-color-scheme: light)"><meta name="theme-color" content="#1b1e24" media="(prefers-color-scheme: dark)"><meta property="og:type" content="article"><meta property="og:locale" content="ko_KR"><meta property="og:site_name" content="Sungjoo Lim — MLOps &amp; AX Engineer"><meta property="og:url" content="https://limsungjoo.github.io/sjlim-site/writing/idle-is-a-state/"><meta property="og:title" content="idle 은 시간이 아니라 상태다 — sjlim"><meta property="og:description" content="켜둔 지 네 시간이 지나면 끄는 규칙은 밤새 학습 중인 워크스페이스도 같이 껐다. 무엇을 놀고 있다고 부를지 다시 정의한 과정."><meta name="twitter:card" content="summary_large_image"><link rel="icon" type="image/svg+xml" href="/sjlim-site/favicon.svg"><link rel="alternate" type="application/rss+xml" title="Sungjoo Lim — MLOps &amp; AX Engineer" href="/sjlim-site/rss.xml"><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans+KR:wght@400;500;600;700&family=IBM+Plex+Sans:wght@400;500;600;700&display=swap"><script>
+      (() => {
+        try {
+          const saved = localStorage.getItem('theme');
+          if (saved === 'light' || saved === 'dark') {
+            document.documentElement.dataset.theme = saved;
+          }
+        } catch {}
+      })();
+    </script><link rel="stylesheet" href="/sjlim-site/_astro/BaseLayout.BYuZglrp.css"><style>.article[data-astro-cid-s4ha2ih2]{padding-top:3rem}.head-tags[data-astro-cid-s4ha2ih2]{flex-wrap:wrap;gap:.4rem .9rem;margin-bottom:1rem;list-style:none;display:flex}.article-title[data-astro-cid-s4ha2ih2]{letter-spacing:-.04em;max-width:34ch;font-size:clamp(1.7rem,1.1rem + 2.6vw,2.45rem);font-weight:600;line-height:1.28}.article-summary[data-astro-cid-s4ha2ih2]{max-width:var(--measure);color:var(--ink-2);margin-top:1rem;font-size:.9375rem;line-height:1.75}.article-meta[data-astro-cid-s4ha2ih2]{border-bottom:1px solid var(--line-soft);flex-wrap:wrap;gap:1rem;margin-top:1.25rem;padding-bottom:1.75rem;display:flex}.series-spine[data-astro-cid-s4ha2ih2]{border:1px solid var(--line);border-radius:var(--radius-surface);background:color-mix(in oklab, var(--accent) 3.5%, transparent);margin-top:2rem;padding:1.1rem 1.25rem}.spine-head[data-astro-cid-s4ha2ih2]{color:var(--accent-ink)}.series-spine[data-astro-cid-s4ha2ih2] ol[data-astro-cid-s4ha2ih2]{margin-top:.7rem;list-style:none;position:relative}.series-spine[data-astro-cid-s4ha2ih2] ol[data-astro-cid-s4ha2ih2]:before{content:"";background:var(--line);width:1px;position:absolute;top:.85rem;bottom:.85rem;left:3px}.spine-item[data-astro-cid-s4ha2ih2]{color:var(--ink-2);grid-template-columns:1.9rem 1fr;align-items:baseline;gap:.5rem;padding:.32rem 0 .32rem 1.15rem;font-size:.9rem;display:grid;position:relative}.spine-item[data-astro-cid-s4ha2ih2]:before{content:"";background:var(--line);border-radius:50%;width:7px;height:7px;position:absolute;top:.72em;left:0}.spine-item[data-astro-cid-s4ha2ih2].current{color:var(--ink);font-weight:600}.spine-item[data-astro-cid-s4ha2ih2].current:before{background:var(--accent)}.spine-item[data-astro-cid-s4ha2ih2].current .spine-no[data-astro-cid-s4ha2ih2]{color:var(--accent)}.spine-item[data-astro-cid-s4ha2ih2] a[data-astro-cid-s4ha2ih2]:hover{color:var(--accent-ink)}.article-body[data-astro-cid-s4ha2ih2]{gap:2rem;margin-top:2.75rem;display:grid}@media (width>=64rem){.article-body[data-astro-cid-s4ha2ih2]{grid-template-columns:1fr 12rem;align-items:start;gap:3.5rem}.toc[data-astro-cid-s4ha2ih2]{order:2;position:sticky;top:5rem}}.toc[data-astro-cid-s4ha2ih2] ol[data-astro-cid-s4ha2ih2]{border-left:1px solid var(--line);gap:.45rem;margin-top:.7rem;padding-left:.9rem;list-style:none;display:grid}.toc[data-astro-cid-s4ha2ih2] a[data-astro-cid-s4ha2ih2]{color:var(--ink-2);font-size:.8125rem;line-height:1.5}.toc[data-astro-cid-s4ha2ih2] a[data-astro-cid-s4ha2ih2]:hover{color:var(--accent-ink)}@media (width<=63.999rem){.toc[data-astro-cid-s4ha2ih2]{border:1px solid var(--line-soft);border-radius:var(--radius-surface);padding:1rem 1.15rem}}.article-foot[data-astro-cid-s4ha2ih2]{border-top:1px solid var(--line-soft);margin-top:4rem;padding-top:1.75rem}.pager[data-astro-cid-s4ha2ih2]{gap:1rem;display:grid}@media (width>=40rem){.pager[data-astro-cid-s4ha2ih2]{grid-template-columns:1fr 1fr}}.pager-item[data-astro-cid-s4ha2ih2]{border:1px solid var(--line);border-radius:var(--radius-surface);gap:.4rem;padding:1rem 1.1rem;transition:border-color .15s,background .15s;display:grid}.pager-item[data-astro-cid-s4ha2ih2]:hover{border-color:var(--accent);background:color-mix(in oklab, var(--accent) 4%, transparent)}.pager-next[data-astro-cid-s4ha2ih2]{text-align:right}.pager-title[data-astro-cid-s4ha2ih2]{letter-spacing:-.015em;font-size:.9375rem;font-weight:500;line-height:1.5}.byline[data-astro-cid-s4ha2ih2]{margin-top:1.75rem}
+</style></head><body><a class="skip" href="#main">Skip to content</a><header class="site-header" data-astro-cid-fzpbxy5g><div class="frame header-inner" data-astro-cid-fzpbxy5g><a href="/sjlim-site/" class="brand" aria-label="sjlim home" data-astro-cid-fzpbxy5g><span class="brand-name" data-astro-cid-fzpbxy5g>sjlim</span><span class="brand-slash" data-astro-cid-fzpbxy5g>/</span></a><nav aria-label="Main" class="nav" data-astro-cid-fzpbxy5g><a href="/sjlim-site/portfolio/" class="nav-link" data-astro-cid-fzpbxy5g>Portfolio</a><a href="/sjlim-site/writing/" class="nav-link" aria-current="page" data-astro-cid-fzpbxy5g>Writing</a><a href="/sjlim-site/notes/" class="nav-link" data-astro-cid-fzpbxy5g>Notes</a></nav><button type="button" class="theme-toggle" data-theme-toggle aria-label="Toggle theme" data-astro-cid-l6lhmie6><span class="theme-dot" aria-hidden="true" data-astro-cid-l6lhmie6></span></button><script>
+  (() => {
+    const btn = document.querySelector('[data-theme-toggle]');
+    if (!btn) return;
+
+    const current = () => {
+      const set = document.documentElement.dataset.theme;
+      if (set) return set;
+      return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+    };
+
+    const sync = () => btn.setAttribute('aria-pressed', String(current() === 'dark'));
+    sync();
+
+    btn.addEventListener('click', () => {
+      const next = current() === 'dark' ? 'light' : 'dark';
+      document.documentElement.dataset.theme = next;
+      try {
+        localStorage.setItem('theme', next);
+      } catch {}
+      sync();
+    });
+  })();
+</script></div></header><main id="main"><article class="frame article" data-astro-cid-s4ha2ih2><header class="article-head" data-astro-cid-s4ha2ih2><ul class="head-tags" data-astro-cid-s4ha2ih2><li class="row-tag" data-astro-cid-s4ha2ih2>#GPU</li><li class="row-tag" data-astro-cid-s4ha2ih2>#비용</li><li class="row-tag" data-astro-cid-s4ha2ih2>#인프라</li></ul><h1 class="article-title" data-astro-cid-s4ha2ih2>idle 은 시간이 아니라 상태다</h1><p class="article-summary" data-astro-cid-s4ha2ih2>켜둔 지 네 시간이 지나면 끄는 규칙은 밤새 학습 중인 워크스페이스도 같이 껐다. 무엇을 놀고 있다고 부를지 다시 정의한 과정.</p><div class="article-meta" data-astro-cid-s4ha2ih2><time class="meta" datetime="2026-06-16" data-astro-cid-s4ha2ih2>2026.06.16</time><span class="meta" data-astro-cid-s4ha2ih2>2 MIN</span><span class="meta" data-astro-cid-s4ha2ih2>놀고 있는 GPU 를 줄이는 법</span></div></header><nav class="series-spine" aria-label="Series contents" data-astro-cid-s4ha2ih2><p class="meta spine-head" data-astro-cid-s4ha2ih2>놀고 있는 GPU 를 줄이는 법</p><ol data-astro-cid-s4ha2ih2><li class="spine-item current" data-astro-cid-s4ha2ih2><span class="meta spine-no" data-astro-cid-s4ha2ih2>01</span><span aria-current="true" data-astro-cid-s4ha2ih2>idle 은 시간이 아니라 상태다</span></li><li class="spine-item" data-astro-cid-s4ha2ih2><span class="meta spine-no" data-astro-cid-s4ha2ih2>02</span><a href="/sjlim-site/writing/stop-picking-nodes/" data-astro-cid-s4ha2ih2>노드를 고르게 하지 않는다</a></li></ol></nav><div class="article-body" data-astro-cid-s4ha2ih2><aside class="toc" aria-label="Contents" data-astro-cid-s4ha2ih2><p class="meta" data-astro-cid-s4ha2ih2>Contents</p><ol data-astro-cid-s4ha2ih2><li data-astro-cid-s4ha2ih2><a href="#시간은-상태의-대리-지표로도-약하다" data-astro-cid-s4ha2ih2>시간은 상태의 대리 지표로도 약하다</a></li><li data-astro-cid-s4ha2ih2><a href="#무엇을-보면-되는지-찾는-데-시간을-썼다" data-astro-cid-s4ha2ih2>무엇을 보면 되는지 찾는 데 시간을 썼다</a></li><li data-astro-cid-s4ha2ih2><a href="#정의를-먼저-적었다" data-astro-cid-s4ha2ih2>정의를 먼저 적었다</a></li><li data-astro-cid-s4ha2ih2><a href="#다음" data-astro-cid-s4ha2ih2>다음</a></li></ol></aside><div class="prose" data-astro-cid-s4ha2ih2><p>연구용 GPU 워크스페이스를 자동으로 끄는 규칙이 있었다.
+기준은 실행 시간이었다.
+켜둔 지 네 시간이 지나면 끈다.</p>
+<p>이 규칙은 두 방향으로 틀렸다.
+밤새 학습을 돌리는 워크스페이스를 껐고, 아무것도 안 하면서 켜져 있는 워크스페이스는 세 시간 오십구 분 동안 살려뒀다.</p>
+<h2 id="시간은-상태의-대리-지표로도-약하다">시간은 상태의 대리 지표로도 약하다</h2>
+<p>시간 기준을 쓴 이유는 측정이 쉬웠기 때문이다.
+언제 켰는지는 어디서나 알 수 있다.</p>
+<p>문제는 시간이 사용 여부와 거의 상관이 없다는 점이다.
+실제로 필요한 질문은 “얼마나 켜져 있었나”가 아니라 “지금 이 자원으로 무엇이 돌고 있나”였다.</p>
+<p>두 질문의 답은 서로 독립적이었다.</p>
+<h2 id="무엇을-보면-되는지-찾는-데-시간을-썼다">무엇을 보면 되는지 찾는 데 시간을 썼다</h2>
+<p>GPU 사용률을 보면 될 것 같았지만, 처음 붙인 모니터링은 노드 단위 지표만 흘렸다.
+노드에 워크스페이스가 여러 개 있으면 어느 쪽이 쓰고 있는지 구분되지 않았다.</p>
+<p>지표를 쪼개려면 워크스페이스와 프로세스를 이어주는 정보가 필요했고, 그 정보는 모니터링 쪽이 아니라 오케스트레이터 쪽에 있었다.
+결국 두 곳의 값을 붙여서 판단하게 됐다.</p>
+<p>여기서 얻은 것은 지표를 고르기 전에 그 지표가 어느 단위로 나오는지 먼저 확인해야 한다는 점이다.
+“GPU 사용률을 본다”는 결정은 단위가 정해지기 전까지는 결정이 아니다.</p>
+<h2 id="정의를-먼저-적었다">정의를 먼저 적었다</h2>
+<p>코드를 고치기 전에 정의를 문서에 적었다.</p>
+<blockquote>
+<p>놀고 있는 워크스페이스: 최근 30분 동안 해당 워크스페이스에 속한 프로세스의 GPU 사용률이 계속 임계값 아래이고, 대화형 세션도 붙어 있지 않은 상태</p>
+</blockquote>
+<p>이 문장에서 세 가지가 결정된다.
+관찰 창의 길이, 판단 주체의 단위, 그리고 사용률만으로는 부족하다는 예외.</p>
+<p>정의를 먼저 적으니 반대 사례를 미리 물어볼 수 있었다.
+데이터를 내려받는 중이라 GPU 는 놀지만 꺼지면 안 되는 경우가 바로 나왔고, 그래서 세션 조건이 정의에 들어갔다.</p>
+<h2 id="다음">다음</h2>
+<p>정의가 정해지자 남은 문제는 “누가 끄는가”였다.
+그리고 애초에 필요 이상으로 큰 노드가 붙지 않게 하는 쪽이 더 큰 몫이었다.
+다음 글에서 이어서 적는다.</p>
+</div></div><footer class="article-foot" data-astro-cid-s4ha2ih2><nav class="pager" aria-label="Adjacent posts" data-astro-cid-s4ha2ih2><span data-astro-cid-s4ha2ih2></span><a class="pager-item pager-next" href="/sjlim-site/writing/stop-picking-nodes/" data-astro-cid-s4ha2ih2><span class="meta" data-astro-cid-s4ha2ih2>Next →</span><span class="pager-title" data-astro-cid-s4ha2ih2>노드를 고르게 하지 않는다</span></a></nav><p class="byline" data-astro-cid-s4ha2ih2><span class="meta" data-astro-cid-s4ha2ih2>Sungjoo Lim · MLOps &amp; AX Engineer</span></p></footer></article></main><footer class="site-footer" data-astro-cid-nns7i3if><div class="frame footer-inner" data-astro-cid-nns7i3if><p class="meta" data-astro-cid-nns7i3if>© 2026 Sungjoo Lim</p><ul class="footer-links" data-astro-cid-nns7i3if><li data-astro-cid-nns7i3if><a href="https://github.com/limsungjoo" rel="me noopener" data-astro-cid-nns7i3if>GitHub</a></li><li data-astro-cid-nns7i3if><a href="https://www.linkedin.com/" rel="me noopener" data-astro-cid-nns7i3if>LinkedIn</a></li><li data-astro-cid-nns7i3if><a href="mailto:hello@example.com" data-astro-cid-nns7i3if>Email</a></li><li data-astro-cid-nns7i3if><a href="/sjlim-site/rss.xml" data-astro-cid-nns7i3if>RSS</a></li></ul></div></footer></body></html>

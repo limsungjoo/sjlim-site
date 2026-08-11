@@ -1,0 +1,45 @@
+<!DOCTYPE html><html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Karpenter consolidation 은 단독 파드를 그냥 걷어간다 — sjlim</title><meta name="description" content="컨트롤러가 관리하지 않는 파드는 &quot;옮길 곳 없는 파드&quot;로 보여서 노드 정리 때 같이 사라진다."><link rel="canonical" href="https://limsungjoo.github.io/sjlim-site/notes/karpenter-evicts-bare-pods/"><meta name="generator" content="Astro v7.2.0"><meta name="color-scheme" content="light dark"><meta name="theme-color" content="#f8f9fb" media="(prefers-color-scheme: light)"><meta name="theme-color" content="#1b1e24" media="(prefers-color-scheme: dark)"><meta property="og:type" content="article"><meta property="og:locale" content="ko_KR"><meta property="og:site_name" content="Sungjoo Lim — MLOps &amp; AX Engineer"><meta property="og:url" content="https://limsungjoo.github.io/sjlim-site/notes/karpenter-evicts-bare-pods/"><meta property="og:title" content="Karpenter consolidation 은 단독 파드를 그냥 걷어간다 — sjlim"><meta property="og:description" content="컨트롤러가 관리하지 않는 파드는 &quot;옮길 곳 없는 파드&quot;로 보여서 노드 정리 때 같이 사라진다."><meta name="twitter:card" content="summary_large_image"><link rel="icon" type="image/svg+xml" href="/sjlim-site/favicon.svg"><link rel="alternate" type="application/rss+xml" title="Sungjoo Lim — MLOps &amp; AX Engineer" href="/sjlim-site/rss.xml"><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans+KR:wght@400;500;600;700&family=IBM+Plex+Sans:wght@400;500;600;700&display=swap"><script>
+      (() => {
+        try {
+          const saved = localStorage.getItem('theme');
+          if (saved === 'light' || saved === 'dark') {
+            document.documentElement.dataset.theme = saved;
+          }
+        } catch {}
+      })();
+    </script><link rel="stylesheet" href="/sjlim-site/_astro/BaseLayout.BYuZglrp.css"><style>.status[data-astro-cid-lwy7f2dc]{font-family:var(--font-mono);letter-spacing:.1em;text-transform:uppercase;color:var(--ink-3);white-space:nowrap;align-items:center;gap:.38em;font-size:.625rem;display:inline-flex}.status-dot[data-astro-cid-lwy7f2dc]{background:var(--ink-3);border-radius:50%;flex:none;width:5px;height:5px}.status[data-astro-cid-lwy7f2dc][data-status=verified]{color:var(--accent-ink)}.status[data-astro-cid-lwy7f2dc][data-status=verified] .status-dot[data-astro-cid-lwy7f2dc]{background:var(--accent)}.status[data-astro-cid-lwy7f2dc][data-status=rough] .status-dot[data-astro-cid-lwy7f2dc]{box-shadow:inset 0 0 0 1px var(--signal);background:0 0}.status[data-astro-cid-lwy7f2dc][data-status=rough]{color:var(--signal)}.status[data-astro-cid-lwy7f2dc][data-status=overturned]{text-decoration:line-through 1px}.status[data-astro-cid-lwy7f2dc][data-status=overturned] .status-dot[data-astro-cid-lwy7f2dc]{box-shadow:inset 0 0 0 1px var(--ink-3);background:0 0}
+.note[data-astro-cid-imlvj43y]{max-width:calc(var(--measure) + 4rem);margin-inline:auto;padding-top:3rem}.note-kind[data-astro-cid-imlvj43y]{flex-wrap:wrap;justify-content:space-between;align-items:center;gap:.9rem;margin-bottom:1.1rem;display:flex}.back[data-astro-cid-imlvj43y]:hover{color:var(--accent-ink)}.note-title[data-astro-cid-imlvj43y]{letter-spacing:-.035em;font-size:clamp(1.5rem,1.1rem + 1.9vw,2rem);font-weight:600;line-height:1.32}.note-summary[data-astro-cid-imlvj43y]{color:var(--ink-2);margin-top:.9rem;font-size:.9375rem;line-height:1.75}.note-dates[data-astro-cid-imlvj43y]{border-bottom:1px solid var(--line-soft);flex-wrap:wrap;gap:1.25rem 2.25rem;margin-top:1.4rem;padding-bottom:1.6rem;display:flex}.note-dates[data-astro-cid-imlvj43y]>div[data-astro-cid-imlvj43y]{gap:.3rem;display:grid}.note-dates[data-astro-cid-imlvj43y] dd[data-astro-cid-imlvj43y].accent{color:var(--accent-ink)}.note-tags[data-astro-cid-imlvj43y] dd[data-astro-cid-imlvj43y]{flex-wrap:wrap;gap:.4rem .8rem;display:flex}.caveat[data-astro-cid-imlvj43y]{border-radius:var(--radius-surface);border:1px solid var(--line);margin-top:1.75rem;padding:.8rem 1rem;font-size:.875rem}.caveat[data-astro-cid-imlvj43y][data-status=rough]{color:var(--signal);border-color:color-mix(in oklab, var(--signal) 35%, transparent);background:var(--signal-soft)}.caveat[data-astro-cid-imlvj43y][data-status=overturned]{color:var(--ink-2)}.prose[data-astro-cid-imlvj43y]{max-width:none;margin-top:2.25rem}.note-foot[data-astro-cid-imlvj43y]{border-top:1px solid var(--line-soft);margin-top:3.5rem;padding-top:1.5rem}.byline[data-astro-cid-imlvj43y]{margin-top:1.25rem}
+</style></head><body><a class="skip" href="#main">Skip to content</a><header class="site-header" data-astro-cid-fzpbxy5g><div class="frame header-inner" data-astro-cid-fzpbxy5g><a href="/sjlim-site/" class="brand" aria-label="sjlim home" data-astro-cid-fzpbxy5g><span class="brand-name" data-astro-cid-fzpbxy5g>sjlim</span><span class="brand-slash" data-astro-cid-fzpbxy5g>/</span></a><nav aria-label="Main" class="nav" data-astro-cid-fzpbxy5g><a href="/sjlim-site/portfolio/" class="nav-link" data-astro-cid-fzpbxy5g>Portfolio</a><a href="/sjlim-site/writing/" class="nav-link" data-astro-cid-fzpbxy5g>Writing</a><a href="/sjlim-site/notes/" class="nav-link" aria-current="page" data-astro-cid-fzpbxy5g>Notes</a></nav><button type="button" class="theme-toggle" data-theme-toggle aria-label="Toggle theme" data-astro-cid-l6lhmie6><span class="theme-dot" aria-hidden="true" data-astro-cid-l6lhmie6></span></button><script>
+  (() => {
+    const btn = document.querySelector('[data-theme-toggle]');
+    if (!btn) return;
+
+    const current = () => {
+      const set = document.documentElement.dataset.theme;
+      if (set) return set;
+      return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+    };
+
+    const sync = () => btn.setAttribute('aria-pressed', String(current() === 'dark'));
+    sync();
+
+    btn.addEventListener('click', () => {
+      const next = current() === 'dark' ? 'light' : 'dark';
+      document.documentElement.dataset.theme = next;
+      try {
+        localStorage.setItem('theme', next);
+      } catch {}
+      sync();
+    });
+  })();
+</script></div></header><main id="main"><article class="frame note" data-astro-cid-imlvj43y><header class="note-head" data-astro-cid-imlvj43y><div class="note-kind" data-astro-cid-imlvj43y><a class="meta back" href="/sjlim-site/notes/" data-astro-cid-imlvj43y>← Notes</a><span class="status" data-status="verified" title="직접 확인함" data-astro-cid-lwy7f2dc><span class="status-dot" aria-hidden="true" data-astro-cid-lwy7f2dc></span>verified</span></div><h1 class="note-title" data-astro-cid-imlvj43y>Karpenter consolidation 은 단독 파드를 그냥 걷어간다</h1><p class="note-summary" data-astro-cid-imlvj43y>컨트롤러가 관리하지 않는 파드는 &quot;옮길 곳 없는 파드&quot;로 보여서 노드 정리 때 같이 사라진다.</p><dl class="note-dates" data-astro-cid-imlvj43y><div data-astro-cid-imlvj43y><dt class="meta" data-astro-cid-imlvj43y>Written</dt><dd class="meta" data-astro-cid-imlvj43y><time datetime="2026-06-24" data-astro-cid-imlvj43y>2026.06.24</time></dd></div><div data-astro-cid-imlvj43y><dt class="meta" data-astro-cid-imlvj43y>Updated</dt><dd class="meta accent" data-astro-cid-imlvj43y><time datetime="2026-07-08" data-astro-cid-imlvj43y>2026.07.08</time></dd></div><div class="note-tags" data-astro-cid-imlvj43y><dt class="meta" data-astro-cid-imlvj43y>Tags</dt><dd data-astro-cid-imlvj43y><span class="row-tag" data-astro-cid-imlvj43y>#Kubernetes</span><span class="row-tag" data-astro-cid-imlvj43y>#Karpenter</span><span class="row-tag" data-astro-cid-imlvj43y>#함정</span></dd></div></dl></header><div class="prose" data-astro-cid-imlvj43y><p>워크스페이스를 <code>kubernetes_pod</code> 로 단독 생성했더니, Karpenter 가 노드를 정리하면서 아직 쓰고 있는 워크스페이스까지 걷어갔다.</p>
+<p>정리기 입장에서는 소유 컨트롤러가 없는 파드라 옮길 곳이 없다고 판단한다.
+그래서 대기하지 않고 그냥 지운다.</p>
+<p>대응:</p>
+<ul>
+<li>파드를 직접 만들지 말고 Deployment 나 StatefulSet 아래에 둔다</li>
+<li>PodDisruptionBudget 을 붙여서 최소 가용 수를 명시한다</li>
+</ul>
+<p>자동 정리를 쓸 때는 <strong>정리 대상에서 빠지는 방법이 먼저 있어야 한다.</strong>
+정리 기능을 켜는 것보다 예외를 만드는 쪽이 오래 걸린다.</p>
+</div><footer class="note-foot" data-astro-cid-imlvj43y><a class="link-more" href="/sjlim-site/notes/" data-astro-cid-imlvj43y>← All notes</a><p class="byline" data-astro-cid-imlvj43y><span class="meta" data-astro-cid-imlvj43y>Sungjoo Lim · MLOps &amp; AX Engineer</span></p></footer></article></main><footer class="site-footer" data-astro-cid-nns7i3if><div class="frame footer-inner" data-astro-cid-nns7i3if><p class="meta" data-astro-cid-nns7i3if>© 2026 Sungjoo Lim</p><ul class="footer-links" data-astro-cid-nns7i3if><li data-astro-cid-nns7i3if><a href="https://github.com/limsungjoo" rel="me noopener" data-astro-cid-nns7i3if>GitHub</a></li><li data-astro-cid-nns7i3if><a href="https://www.linkedin.com/" rel="me noopener" data-astro-cid-nns7i3if>LinkedIn</a></li><li data-astro-cid-nns7i3if><a href="mailto:hello@example.com" data-astro-cid-nns7i3if>Email</a></li><li data-astro-cid-nns7i3if><a href="/sjlim-site/rss.xml" data-astro-cid-nns7i3if>RSS</a></li></ul></div></footer></body></html>

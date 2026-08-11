@@ -1,0 +1,97 @@
+<!DOCTYPE html><html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>다 만든 기능을 버린 이유 — sjlim</title><meta name="description" content="테스트도 통과하고 리뷰도 끝난 기능을 병합하지 않고 닫았다. 코드가 틀려서가 아니라 그 일을 이미 다른 층이 하고 있어서였다."><link rel="canonical" href="https://limsungjoo.github.io/sjlim-site/writing/who-owns-this-feature/"><meta name="generator" content="Astro v7.2.0"><meta name="color-scheme" content="light dark"><meta name="theme-color" content="#f8f9fb" media="(prefers-color-scheme: light)"><meta name="theme-color" content="#1b1e24" media="(prefers-color-scheme: dark)"><meta property="og:type" content="article"><meta property="og:locale" content="ko_KR"><meta property="og:site_name" content="Sungjoo Lim — MLOps &amp; AX Engineer"><meta property="og:url" content="https://limsungjoo.github.io/sjlim-site/writing/who-owns-this-feature/"><meta property="og:title" content="다 만든 기능을 버린 이유 — sjlim"><meta property="og:description" content="테스트도 통과하고 리뷰도 끝난 기능을 병합하지 않고 닫았다. 코드가 틀려서가 아니라 그 일을 이미 다른 층이 하고 있어서였다."><meta name="twitter:card" content="summary_large_image"><link rel="icon" type="image/svg+xml" href="/sjlim-site/favicon.svg"><link rel="alternate" type="application/rss+xml" title="Sungjoo Lim — MLOps &amp; AX Engineer" href="/sjlim-site/rss.xml"><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans+KR:wght@400;500;600;700&family=IBM+Plex+Sans:wght@400;500;600;700&display=swap"><script>
+      (() => {
+        try {
+          const saved = localStorage.getItem('theme');
+          if (saved === 'light' || saved === 'dark') {
+            document.documentElement.dataset.theme = saved;
+          }
+        } catch {}
+      })();
+    </script><link rel="stylesheet" href="/sjlim-site/_astro/BaseLayout.BYuZglrp.css"><style>.article[data-astro-cid-s4ha2ih2]{padding-top:3rem}.head-tags[data-astro-cid-s4ha2ih2]{flex-wrap:wrap;gap:.4rem .9rem;margin-bottom:1rem;list-style:none;display:flex}.article-title[data-astro-cid-s4ha2ih2]{letter-spacing:-.04em;max-width:34ch;font-size:clamp(1.7rem,1.1rem + 2.6vw,2.45rem);font-weight:600;line-height:1.28}.article-summary[data-astro-cid-s4ha2ih2]{max-width:var(--measure);color:var(--ink-2);margin-top:1rem;font-size:.9375rem;line-height:1.75}.article-meta[data-astro-cid-s4ha2ih2]{border-bottom:1px solid var(--line-soft);flex-wrap:wrap;gap:1rem;margin-top:1.25rem;padding-bottom:1.75rem;display:flex}.series-spine[data-astro-cid-s4ha2ih2]{border:1px solid var(--line);border-radius:var(--radius-surface);background:color-mix(in oklab, var(--accent) 3.5%, transparent);margin-top:2rem;padding:1.1rem 1.25rem}.spine-head[data-astro-cid-s4ha2ih2]{color:var(--accent-ink)}.series-spine[data-astro-cid-s4ha2ih2] ol[data-astro-cid-s4ha2ih2]{margin-top:.7rem;list-style:none;position:relative}.series-spine[data-astro-cid-s4ha2ih2] ol[data-astro-cid-s4ha2ih2]:before{content:"";background:var(--line);width:1px;position:absolute;top:.85rem;bottom:.85rem;left:3px}.spine-item[data-astro-cid-s4ha2ih2]{color:var(--ink-2);grid-template-columns:1.9rem 1fr;align-items:baseline;gap:.5rem;padding:.32rem 0 .32rem 1.15rem;font-size:.9rem;display:grid;position:relative}.spine-item[data-astro-cid-s4ha2ih2]:before{content:"";background:var(--line);border-radius:50%;width:7px;height:7px;position:absolute;top:.72em;left:0}.spine-item[data-astro-cid-s4ha2ih2].current{color:var(--ink);font-weight:600}.spine-item[data-astro-cid-s4ha2ih2].current:before{background:var(--accent)}.spine-item[data-astro-cid-s4ha2ih2].current .spine-no[data-astro-cid-s4ha2ih2]{color:var(--accent)}.spine-item[data-astro-cid-s4ha2ih2] a[data-astro-cid-s4ha2ih2]:hover{color:var(--accent-ink)}.article-body[data-astro-cid-s4ha2ih2]{gap:2rem;margin-top:2.75rem;display:grid}@media (width>=64rem){.article-body[data-astro-cid-s4ha2ih2]{grid-template-columns:1fr 12rem;align-items:start;gap:3.5rem}.toc[data-astro-cid-s4ha2ih2]{order:2;position:sticky;top:5rem}}.toc[data-astro-cid-s4ha2ih2] ol[data-astro-cid-s4ha2ih2]{border-left:1px solid var(--line);gap:.45rem;margin-top:.7rem;padding-left:.9rem;list-style:none;display:grid}.toc[data-astro-cid-s4ha2ih2] a[data-astro-cid-s4ha2ih2]{color:var(--ink-2);font-size:.8125rem;line-height:1.5}.toc[data-astro-cid-s4ha2ih2] a[data-astro-cid-s4ha2ih2]:hover{color:var(--accent-ink)}@media (width<=63.999rem){.toc[data-astro-cid-s4ha2ih2]{border:1px solid var(--line-soft);border-radius:var(--radius-surface);padding:1rem 1.15rem}}.article-foot[data-astro-cid-s4ha2ih2]{border-top:1px solid var(--line-soft);margin-top:4rem;padding-top:1.75rem}.pager[data-astro-cid-s4ha2ih2]{gap:1rem;display:grid}@media (width>=40rem){.pager[data-astro-cid-s4ha2ih2]{grid-template-columns:1fr 1fr}}.pager-item[data-astro-cid-s4ha2ih2]{border:1px solid var(--line);border-radius:var(--radius-surface);gap:.4rem;padding:1rem 1.1rem;transition:border-color .15s,background .15s;display:grid}.pager-item[data-astro-cid-s4ha2ih2]:hover{border-color:var(--accent);background:color-mix(in oklab, var(--accent) 4%, transparent)}.pager-next[data-astro-cid-s4ha2ih2]{text-align:right}.pager-title[data-astro-cid-s4ha2ih2]{letter-spacing:-.015em;font-size:.9375rem;font-weight:500;line-height:1.5}.byline[data-astro-cid-s4ha2ih2]{margin-top:1.75rem}
+</style></head><body><a class="skip" href="#main">Skip to content</a><header class="site-header" data-astro-cid-fzpbxy5g><div class="frame header-inner" data-astro-cid-fzpbxy5g><a href="/sjlim-site/" class="brand" aria-label="sjlim home" data-astro-cid-fzpbxy5g><span class="brand-name" data-astro-cid-fzpbxy5g>sjlim</span><span class="brand-slash" data-astro-cid-fzpbxy5g>/</span></a><nav aria-label="Main" class="nav" data-astro-cid-fzpbxy5g><a href="/sjlim-site/portfolio/" class="nav-link" data-astro-cid-fzpbxy5g>Portfolio</a><a href="/sjlim-site/writing/" class="nav-link" aria-current="page" data-astro-cid-fzpbxy5g>Writing</a><a href="/sjlim-site/notes/" class="nav-link" data-astro-cid-fzpbxy5g>Notes</a></nav><button type="button" class="theme-toggle" data-theme-toggle aria-label="Toggle theme" data-astro-cid-l6lhmie6><span class="theme-dot" aria-hidden="true" data-astro-cid-l6lhmie6></span></button><script>
+  (() => {
+    const btn = document.querySelector('[data-theme-toggle]');
+    if (!btn) return;
+
+    const current = () => {
+      const set = document.documentElement.dataset.theme;
+      if (set) return set;
+      return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+    };
+
+    const sync = () => btn.setAttribute('aria-pressed', String(current() === 'dark'));
+    sync();
+
+    btn.addEventListener('click', () => {
+      const next = current() === 'dark' ? 'light' : 'dark';
+      document.documentElement.dataset.theme = next;
+      try {
+        localStorage.setItem('theme', next);
+      } catch {}
+      sync();
+    });
+  })();
+</script></div></header><main id="main"><article class="frame article" data-astro-cid-s4ha2ih2><header class="article-head" data-astro-cid-s4ha2ih2><ul class="head-tags" data-astro-cid-s4ha2ih2><li class="row-tag" data-astro-cid-s4ha2ih2>#설계</li><li class="row-tag" data-astro-cid-s4ha2ih2>#코드 리뷰</li><li class="row-tag" data-astro-cid-s4ha2ih2>#의사결정</li></ul><h1 class="article-title" data-astro-cid-s4ha2ih2>다 만든 기능을 버린 이유</h1><p class="article-summary" data-astro-cid-s4ha2ih2>테스트도 통과하고 리뷰도 끝난 기능을 병합하지 않고 닫았다. 코드가 틀려서가 아니라 그 일을 이미 다른 층이 하고 있어서였다.</p><div class="article-meta" data-astro-cid-s4ha2ih2><time class="meta" datetime="2026-08-05" data-astro-cid-s4ha2ih2>2026.08.05</time><span class="meta" data-astro-cid-s4ha2ih2>2 MIN</span></div></header><div class="article-body" data-astro-cid-s4ha2ih2><aside class="toc" aria-label="Contents" data-astro-cid-s4ha2ih2><p class="meta" data-astro-cid-s4ha2ih2>Contents</p><ol data-astro-cid-s4ha2ih2><li data-astro-cid-s4ha2ih2><a href="#리뷰에서-나온-것" data-astro-cid-s4ha2ih2>리뷰에서 나온 것</a></li><li data-astro-cid-s4ha2ih2><a href="#같은-일을-두-곳이-하고-있었다" data-astro-cid-s4ha2ih2>같은 일을 두 곳이 하고 있었다</a></li><li data-astro-cid-s4ha2ih2><a href="#무엇을-기준으로-닫았나" data-astro-cid-s4ha2ih2>무엇을 기준으로 닫았나</a></li><li data-astro-cid-s4ha2ih2><a href="#되돌아보면" data-astro-cid-s4ha2ih2>되돌아보면</a></li></ol></aside><div class="prose" data-astro-cid-s4ha2ih2><p>목록을 받아 항목을 순서대로 실행하고, 이미 끝난 항목은 건너뛰는 기능을 만들었다.
+테스트를 먼저 쓰고 구현했고, 검사기를 고장 내는 방식으로 테스트가 실제로 무엇을 잡는지도 확인했다.
+리뷰까지 끝났다.</p>
+<p>병합하지 않고 닫았다.</p>
+<h2 id="리뷰에서-나온-것">리뷰에서 나온 것</h2>
+<p>적대적 리뷰를 붙였더니 아홉 건이 나왔다.
+대부분은 고칠 수 있는 것이었다.
+목록 항목의 타입이 섞였을 때 조용히 받아들이는 문제, 항목 식별자가 대소문자만 다르면 충돌하는 문제, 중간에 죽었을 때 상태 파일이 깨지는 문제.</p>
+<p>하나가 성격이 달랐다.
+같은 목록을 두 프로세스가 동시에 실행하면 상태 파일을 확인하는 시점과 쓰는 시점 사이에 끼어들 수 있었다.</p>
+<p>이건 잠금을 붙이면 되는 문제였다.
+그런데 잠금을 어디에 둘지 정하려고 보니, 이미 그 결정을 내린 층이 따로 있었다.</p>
+<h2 id="같은-일을-두-곳이-하고-있었다">같은 일을 두 곳이 하고 있었다</h2>
+<p>작업을 나눠서 여러 대에 뿌리고, 실패한 것만 다시 돌리고, 진행 상태를 공유 저장소에 기록하는 층이 이미 운영되고 있었다.</p>
+<p>내가 만든 기능은 그 층이 하는 일의 축소판이었다.
+한 대 안에서, 파일로, 순서대로.</p>
+<p>두 개가 공존하면 “이 목록은 어느 쪽이 돌리고 있나”라는 질문이 생긴다.
+그 질문의 답이 상황마다 다르면 상태를 신뢰할 수 없다.</p>
+<p>정리하면 이렇다.</p>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th></th>
+<th>기존 층</th>
+<th>새로 만든 것</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>실행 범위</td>
+<td>여러 노드</td>
+<td>한 프로세스</td>
+</tr>
+<tr>
+<td>상태 저장</td>
+<td>공유 저장소</td>
+<td>로컬 파일</td>
+</tr>
+<tr>
+<td>재시도</td>
+<td>있음</td>
+<td>없음</td>
+</tr>
+<tr>
+<td>동시 실행</td>
+<td>전제</td>
+<td>방어 못 함</td>
+</tr>
+</tbody>
+</table></div>
+<h2 id="무엇을-기준으로-닫았나">무엇을 기준으로 닫았나</h2>
+<p>기능이 나쁘냐가 아니라, 이 책임을 어디가 갖느냐가 기준이었다.</p>
+<p>반복과 완료 판정은 이미 주인이 있었다.
+주인이 있는 책임을 한 층 더 아래에 복제하면, 잘 만들수록 나중에 걷어내기 어려워진다.</p>
+<p>닫으면서 남긴 것은 코드가 아니라 문장 하나였다.</p>
+<blockquote>
+<p>목록을 도는 책임은 한 층만 갖는다.</p>
+</blockquote>
+<h2 id="되돌아보면">되돌아보면</h2>
+<p>아까웠던 것은 코드가 아니라 리뷰에서 나온 아홉 건이었다.
+그건 문서로 옮겨서 기존 층을 점검하는 목록으로 썼다.</p>
+<p>닫는 결정을 리뷰 뒤에 한 것도 순서가 늦었다.
+“이 일을 지금 하는 곳이 있는가”는 구현 전에 물었어야 하는 질문이다.</p>
+</div></div><footer class="article-foot" data-astro-cid-s4ha2ih2><nav class="pager" aria-label="Adjacent posts" data-astro-cid-s4ha2ih2><a class="pager-item" href="/sjlim-site/writing/tests-that-pass-for-nothing/" data-astro-cid-s4ha2ih2><span class="meta" data-astro-cid-s4ha2ih2>← Previous</span><span class="pager-title" data-astro-cid-s4ha2ih2>통과하는 실패 테스트</span></a></nav><p class="byline" data-astro-cid-s4ha2ih2><span class="meta" data-astro-cid-s4ha2ih2>Sungjoo Lim · MLOps &amp; AX Engineer</span></p></footer></article></main><footer class="site-footer" data-astro-cid-nns7i3if><div class="frame footer-inner" data-astro-cid-nns7i3if><p class="meta" data-astro-cid-nns7i3if>© 2026 Sungjoo Lim</p><ul class="footer-links" data-astro-cid-nns7i3if><li data-astro-cid-nns7i3if><a href="https://github.com/limsungjoo" rel="me noopener" data-astro-cid-nns7i3if>GitHub</a></li><li data-astro-cid-nns7i3if><a href="https://www.linkedin.com/" rel="me noopener" data-astro-cid-nns7i3if>LinkedIn</a></li><li data-astro-cid-nns7i3if><a href="mailto:hello@example.com" data-astro-cid-nns7i3if>Email</a></li><li data-astro-cid-nns7i3if><a href="/sjlim-site/rss.xml" data-astro-cid-nns7i3if>RSS</a></li></ul></div></footer></body></html>

@@ -1,0 +1,69 @@
+<!DOCTYPE html><html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>노드를 고르게 하지 않는다 — sjlim</title><meta name="description" content="연구자에게 인스턴스 타입을 고르라고 하면 대부분 가장 큰 것을 고른다. 선택지를 없애고 요청한 자원에 맞는 노드가 오게 바꾼 기록."><link rel="canonical" href="https://limsungjoo.github.io/sjlim-site/writing/stop-picking-nodes/"><meta name="generator" content="Astro v7.2.0"><meta name="color-scheme" content="light dark"><meta name="theme-color" content="#f8f9fb" media="(prefers-color-scheme: light)"><meta name="theme-color" content="#1b1e24" media="(prefers-color-scheme: dark)"><meta property="og:type" content="article"><meta property="og:locale" content="ko_KR"><meta property="og:site_name" content="Sungjoo Lim — MLOps &amp; AX Engineer"><meta property="og:url" content="https://limsungjoo.github.io/sjlim-site/writing/stop-picking-nodes/"><meta property="og:title" content="노드를 고르게 하지 않는다 — sjlim"><meta property="og:description" content="연구자에게 인스턴스 타입을 고르라고 하면 대부분 가장 큰 것을 고른다. 선택지를 없애고 요청한 자원에 맞는 노드가 오게 바꾼 기록."><meta name="twitter:card" content="summary_large_image"><link rel="icon" type="image/svg+xml" href="/sjlim-site/favicon.svg"><link rel="alternate" type="application/rss+xml" title="Sungjoo Lim — MLOps &amp; AX Engineer" href="/sjlim-site/rss.xml"><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans+KR:wght@400;500;600;700&family=IBM+Plex+Sans:wght@400;500;600;700&display=swap"><script>
+      (() => {
+        try {
+          const saved = localStorage.getItem('theme');
+          if (saved === 'light' || saved === 'dark') {
+            document.documentElement.dataset.theme = saved;
+          }
+        } catch {}
+      })();
+    </script><link rel="stylesheet" href="/sjlim-site/_astro/BaseLayout.BYuZglrp.css"><style>.article[data-astro-cid-s4ha2ih2]{padding-top:3rem}.head-tags[data-astro-cid-s4ha2ih2]{flex-wrap:wrap;gap:.4rem .9rem;margin-bottom:1rem;list-style:none;display:flex}.article-title[data-astro-cid-s4ha2ih2]{letter-spacing:-.04em;max-width:34ch;font-size:clamp(1.7rem,1.1rem + 2.6vw,2.45rem);font-weight:600;line-height:1.28}.article-summary[data-astro-cid-s4ha2ih2]{max-width:var(--measure);color:var(--ink-2);margin-top:1rem;font-size:.9375rem;line-height:1.75}.article-meta[data-astro-cid-s4ha2ih2]{border-bottom:1px solid var(--line-soft);flex-wrap:wrap;gap:1rem;margin-top:1.25rem;padding-bottom:1.75rem;display:flex}.series-spine[data-astro-cid-s4ha2ih2]{border:1px solid var(--line);border-radius:var(--radius-surface);background:color-mix(in oklab, var(--accent) 3.5%, transparent);margin-top:2rem;padding:1.1rem 1.25rem}.spine-head[data-astro-cid-s4ha2ih2]{color:var(--accent-ink)}.series-spine[data-astro-cid-s4ha2ih2] ol[data-astro-cid-s4ha2ih2]{margin-top:.7rem;list-style:none;position:relative}.series-spine[data-astro-cid-s4ha2ih2] ol[data-astro-cid-s4ha2ih2]:before{content:"";background:var(--line);width:1px;position:absolute;top:.85rem;bottom:.85rem;left:3px}.spine-item[data-astro-cid-s4ha2ih2]{color:var(--ink-2);grid-template-columns:1.9rem 1fr;align-items:baseline;gap:.5rem;padding:.32rem 0 .32rem 1.15rem;font-size:.9rem;display:grid;position:relative}.spine-item[data-astro-cid-s4ha2ih2]:before{content:"";background:var(--line);border-radius:50%;width:7px;height:7px;position:absolute;top:.72em;left:0}.spine-item[data-astro-cid-s4ha2ih2].current{color:var(--ink);font-weight:600}.spine-item[data-astro-cid-s4ha2ih2].current:before{background:var(--accent)}.spine-item[data-astro-cid-s4ha2ih2].current .spine-no[data-astro-cid-s4ha2ih2]{color:var(--accent)}.spine-item[data-astro-cid-s4ha2ih2] a[data-astro-cid-s4ha2ih2]:hover{color:var(--accent-ink)}.article-body[data-astro-cid-s4ha2ih2]{gap:2rem;margin-top:2.75rem;display:grid}@media (width>=64rem){.article-body[data-astro-cid-s4ha2ih2]{grid-template-columns:1fr 12rem;align-items:start;gap:3.5rem}.toc[data-astro-cid-s4ha2ih2]{order:2;position:sticky;top:5rem}}.toc[data-astro-cid-s4ha2ih2] ol[data-astro-cid-s4ha2ih2]{border-left:1px solid var(--line);gap:.45rem;margin-top:.7rem;padding-left:.9rem;list-style:none;display:grid}.toc[data-astro-cid-s4ha2ih2] a[data-astro-cid-s4ha2ih2]{color:var(--ink-2);font-size:.8125rem;line-height:1.5}.toc[data-astro-cid-s4ha2ih2] a[data-astro-cid-s4ha2ih2]:hover{color:var(--accent-ink)}@media (width<=63.999rem){.toc[data-astro-cid-s4ha2ih2]{border:1px solid var(--line-soft);border-radius:var(--radius-surface);padding:1rem 1.15rem}}.article-foot[data-astro-cid-s4ha2ih2]{border-top:1px solid var(--line-soft);margin-top:4rem;padding-top:1.75rem}.pager[data-astro-cid-s4ha2ih2]{gap:1rem;display:grid}@media (width>=40rem){.pager[data-astro-cid-s4ha2ih2]{grid-template-columns:1fr 1fr}}.pager-item[data-astro-cid-s4ha2ih2]{border:1px solid var(--line);border-radius:var(--radius-surface);gap:.4rem;padding:1rem 1.1rem;transition:border-color .15s,background .15s;display:grid}.pager-item[data-astro-cid-s4ha2ih2]:hover{border-color:var(--accent);background:color-mix(in oklab, var(--accent) 4%, transparent)}.pager-next[data-astro-cid-s4ha2ih2]{text-align:right}.pager-title[data-astro-cid-s4ha2ih2]{letter-spacing:-.015em;font-size:.9375rem;font-weight:500;line-height:1.5}.byline[data-astro-cid-s4ha2ih2]{margin-top:1.75rem}
+</style></head><body><a class="skip" href="#main">Skip to content</a><header class="site-header" data-astro-cid-fzpbxy5g><div class="frame header-inner" data-astro-cid-fzpbxy5g><a href="/sjlim-site/" class="brand" aria-label="sjlim home" data-astro-cid-fzpbxy5g><span class="brand-name" data-astro-cid-fzpbxy5g>sjlim</span><span class="brand-slash" data-astro-cid-fzpbxy5g>/</span></a><nav aria-label="Main" class="nav" data-astro-cid-fzpbxy5g><a href="/sjlim-site/portfolio/" class="nav-link" data-astro-cid-fzpbxy5g>Portfolio</a><a href="/sjlim-site/writing/" class="nav-link" aria-current="page" data-astro-cid-fzpbxy5g>Writing</a><a href="/sjlim-site/notes/" class="nav-link" data-astro-cid-fzpbxy5g>Notes</a></nav><button type="button" class="theme-toggle" data-theme-toggle aria-label="Toggle theme" data-astro-cid-l6lhmie6><span class="theme-dot" aria-hidden="true" data-astro-cid-l6lhmie6></span></button><script>
+  (() => {
+    const btn = document.querySelector('[data-theme-toggle]');
+    if (!btn) return;
+
+    const current = () => {
+      const set = document.documentElement.dataset.theme;
+      if (set) return set;
+      return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+    };
+
+    const sync = () => btn.setAttribute('aria-pressed', String(current() === 'dark'));
+    sync();
+
+    btn.addEventListener('click', () => {
+      const next = current() === 'dark' ? 'light' : 'dark';
+      document.documentElement.dataset.theme = next;
+      try {
+        localStorage.setItem('theme', next);
+      } catch {}
+      sync();
+    });
+  })();
+</script></div></header><main id="main"><article class="frame article" data-astro-cid-s4ha2ih2><header class="article-head" data-astro-cid-s4ha2ih2><ul class="head-tags" data-astro-cid-s4ha2ih2><li class="row-tag" data-astro-cid-s4ha2ih2>#GPU</li><li class="row-tag" data-astro-cid-s4ha2ih2>#Kubernetes</li><li class="row-tag" data-astro-cid-s4ha2ih2>#인프라</li></ul><h1 class="article-title" data-astro-cid-s4ha2ih2>노드를 고르게 하지 않는다</h1><p class="article-summary" data-astro-cid-s4ha2ih2>연구자에게 인스턴스 타입을 고르라고 하면 대부분 가장 큰 것을 고른다. 선택지를 없애고 요청한 자원에 맞는 노드가 오게 바꾼 기록.</p><div class="article-meta" data-astro-cid-s4ha2ih2><time class="meta" datetime="2026-06-30" data-astro-cid-s4ha2ih2>2026.06.30</time><span class="meta" data-astro-cid-s4ha2ih2>1 MIN</span><span class="meta" data-astro-cid-s4ha2ih2>놀고 있는 GPU 를 줄이는 법</span></div></header><nav class="series-spine" aria-label="Series contents" data-astro-cid-s4ha2ih2><p class="meta spine-head" data-astro-cid-s4ha2ih2>놀고 있는 GPU 를 줄이는 법</p><ol data-astro-cid-s4ha2ih2><li class="spine-item" data-astro-cid-s4ha2ih2><span class="meta spine-no" data-astro-cid-s4ha2ih2>01</span><a href="/sjlim-site/writing/idle-is-a-state/" data-astro-cid-s4ha2ih2>idle 은 시간이 아니라 상태다</a></li><li class="spine-item current" data-astro-cid-s4ha2ih2><span class="meta spine-no" data-astro-cid-s4ha2ih2>02</span><span aria-current="true" data-astro-cid-s4ha2ih2>노드를 고르게 하지 않는다</span></li></ol></nav><div class="article-body" data-astro-cid-s4ha2ih2><aside class="toc" aria-label="Contents" data-astro-cid-s4ha2ih2><p class="meta" data-astro-cid-s4ha2ih2>Contents</p><ol data-astro-cid-s4ha2ih2><li data-astro-cid-s4ha2ih2><a href="#질문을-바꿨다" data-astro-cid-s4ha2ih2>질문을 바꿨다</a></li><li data-astro-cid-s4ha2ih2><a href="#붙는-쪽과-사라지는-쪽" data-astro-cid-s4ha2ih2>붙는 쪽과 사라지는 쪽</a></li><li data-astro-cid-s4ha2ih2><a href="#검증에서-확인한-것" data-astro-cid-s4ha2ih2>검증에서 확인한 것</a></li></ol></aside><div class="prose" data-astro-cid-s4ha2ih2><p>워크스페이스를 만들 때 인스턴스 타입을 고르는 드롭다운이 있었다.
+목록에는 여덟 가지가 있었고, 실제로 쓰이는 것은 두 가지였다.
+가장 큰 GPU 노드와, 그것이 없을 때 고르는 그다음 큰 노드.</p>
+<p>연구자를 탓할 일이 아니다.
+어떤 노드를 골라야 이 학습이 도는지는 돌려보기 전에는 모른다.
+모르는 상태에서 고르라고 하면 안전한 쪽으로 고르는 것이 합리적이다.</p>
+<h2 id="질문을-바꿨다">질문을 바꿨다</h2>
+<p>고를 것을 없애는 대신 물어볼 것을 바꿨다.</p>
+<blockquote>
+<p><del>어떤 인스턴스를 쓰시겠습니까?</del></p>
+<p>GPU 몇 장이 필요합니까?</p>
+</blockquote>
+<p>노드 타입은 사람이 아는 정보가 아니고, 필요한 GPU 수는 사람이 아는 정보다.
+아는 것만 묻고 나머지는 스케줄러가 정하게 했다.</p>
+<h2 id="붙는-쪽과-사라지는-쪽">붙는 쪽과 사라지는 쪽</h2>
+<p>요청이 들어오면 그 요청을 담을 수 있는 가장 작은 노드가 새로 뜬다.
+그 노드에 아무것도 남지 않으면 스스로 사라진다.</p>
+<p>여기까지는 문서대로였다.
+실제로 시간을 쓴 부분은 사라지는 쪽이었다.</p>
+<p>노드를 정리하는 동작이 아직 살아 있는 워크스페이스까지 옮기려 했다.
+워크스페이스가 단독 파드로 떠 있어서, 정리기 입장에서는 옮길 곳 없는 파드로 보였고 그냥 걷어냈다.</p>
+<p>컨트롤러가 관리하는 형태로 바꾸고 중단 허용치를 붙여서 막았다.
+자동 정리 기능을 쓸 때는 정리 대상에서 빠지는 방법이 먼저 있어야 한다.</p>
+<h2 id="검증에서-확인한-것">검증에서 확인한 것</h2>
+<p>여섯 시나리오로 확인했다.</p>
+<ol>
+<li>GPU 없는 요청에 GPU 노드가 붙지 않는지</li>
+<li>1장 요청에 1장짜리 노드가 붙는지</li>
+<li>다중 GPU 요청이 한 노드에 들어가는지</li>
+<li>자원이 없을 때 대기하다가 붙는지</li>
+<li>동시 요청이 서로를 밀어내지 않는지</li>
+<li>강제 종료 뒤 상태가 복구되는지</li>
+</ol>
+<p>여섯 개 모두 의도한 대로 동작하는 것을 확인한 뒤에 기존 환경으로 옮겼다.
+숫자로 남은 결과보다, 연구자가 노드 이름을 몰라도 되게 된 쪽이 더 오래 남았다.</p>
+</div></div><footer class="article-foot" data-astro-cid-s4ha2ih2><nav class="pager" aria-label="Adjacent posts" data-astro-cid-s4ha2ih2><a class="pager-item" href="/sjlim-site/writing/idle-is-a-state/" data-astro-cid-s4ha2ih2><span class="meta" data-astro-cid-s4ha2ih2>← Previous</span><span class="pager-title" data-astro-cid-s4ha2ih2>idle 은 시간이 아니라 상태다</span></a></nav><p class="byline" data-astro-cid-s4ha2ih2><span class="meta" data-astro-cid-s4ha2ih2>Sungjoo Lim · MLOps &amp; AX Engineer</span></p></footer></article></main><footer class="site-footer" data-astro-cid-nns7i3if><div class="frame footer-inner" data-astro-cid-nns7i3if><p class="meta" data-astro-cid-nns7i3if>© 2026 Sungjoo Lim</p><ul class="footer-links" data-astro-cid-nns7i3if><li data-astro-cid-nns7i3if><a href="https://github.com/limsungjoo" rel="me noopener" data-astro-cid-nns7i3if>GitHub</a></li><li data-astro-cid-nns7i3if><a href="https://www.linkedin.com/" rel="me noopener" data-astro-cid-nns7i3if>LinkedIn</a></li><li data-astro-cid-nns7i3if><a href="mailto:hello@example.com" data-astro-cid-nns7i3if>Email</a></li><li data-astro-cid-nns7i3if><a href="/sjlim-site/rss.xml" data-astro-cid-nns7i3if>RSS</a></li></ul></div></footer></body></html>
